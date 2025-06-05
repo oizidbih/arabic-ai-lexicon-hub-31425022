@@ -5,18 +5,18 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useLanguage } from '@/contexts/LanguageContext'
-import { supabase, type Suggestion, type Word } from '@/lib/supabase'
+import { supabase, type Suggestion, type Term } from '@/lib/supabase'
 import { toast } from '@/hooks/use-toast'
 
 const AdminPanel: React.FC = () => {
   const { t } = useLanguage()
   const [pendingSuggestions, setPendingSuggestions] = useState<Suggestion[]>([])
-  const [allWords, setAllWords] = useState<Word[]>([])
+  const [allTerms, setAllTerms] = useState<Term[]>([])
   const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     loadPendingSuggestions()
-    loadAllWords()
+    loadAllTerms()
   }, [])
 
   const loadPendingSuggestions = async () => {
@@ -37,51 +37,48 @@ const AdminPanel: React.FC = () => {
     }
   }
 
-  const loadAllWords = async () => {
+  const loadAllTerms = async () => {
     try {
       const { data, error } = await supabase
-        .from('words')
+        .from('terms')
         .select('*')
         .order('created_at', { ascending: false })
 
       if (error) throw error
-      setAllWords(data || [])
+      setAllTerms(data || [])
     } catch (error) {
-      console.error('Error loading words:', error)
+      console.error('Error loading terms:', error)
     }
   }
 
   const handleApproveSuggestion = async (suggestion: Suggestion) => {
     try {
-      // Add to words table
-      const { error: insertError } = await supabase
-        .from('words')
-        .insert([{
-          english_term: suggestion.english_term,
-          arabic_translation: suggestion.suggested_arabic,
-          definition_english: suggestion.definition_english,
-          definition_arabic: suggestion.definition_arabic,
-          category: suggestion.category,
+      // Update the existing term with the suggested Arabic translation
+      const { error: updateError } = await supabase
+        .from('terms')
+        .update({ 
+          arabic_term: suggestion.suggested_arabic_term,
           status: 'approved'
-        }])
+        })
+        .eq('id', suggestion.term_id)
 
-      if (insertError) throw insertError
+      if (updateError) throw updateError
 
       // Update suggestion status
-      const { error: updateError } = await supabase
+      const { error: suggestionError } = await supabase
         .from('suggestions')
         .update({ status: 'approved' })
         .eq('id', suggestion.id)
 
-      if (updateError) throw updateError
+      if (suggestionError) throw suggestionError
 
       toast({
         title: t('success'),
-        description: "Suggestion approved and added to dictionary"
+        description: "Suggestion approved and term updated"
       })
 
       loadPendingSuggestions()
-      loadAllWords()
+      loadAllTerms()
     } catch (error) {
       console.error('Error approving suggestion:', error)
       toast({
@@ -92,7 +89,7 @@ const AdminPanel: React.FC = () => {
     }
   }
 
-  const handleRejectSuggestion = async (suggestionId: number) => {
+  const handleRejectSuggestion = async (suggestionId: string) => {
     try {
       const { error } = await supabase
         .from('suggestions')
@@ -127,7 +124,7 @@ const AdminPanel: React.FC = () => {
       <Tabs defaultValue="suggestions" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="suggestions">{t('pendingSuggestions')} ({pendingSuggestions.length})</TabsTrigger>
-          <TabsTrigger value="words">{t('viewAll')} ({allWords.length})</TabsTrigger>
+          <TabsTrigger value="terms">{t('viewAll')} ({allTerms.length})</TabsTrigger>
         </TabsList>
         
         <TabsContent value="suggestions" className="space-y-4">
@@ -143,9 +140,9 @@ const AdminPanel: React.FC = () => {
                 <CardHeader className="bg-yellow-50">
                   <CardTitle className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
-                      <span>{suggestion.english_term}</span>
+                      <span>Term ID: {suggestion.term_id}</span>
                       <span className="text-slate-400">→</span>
-                      <span className="text-right font-arabic">{suggestion.suggested_arabic}</span>
+                      <span className="text-right font-arabic">{suggestion.suggested_arabic_term}</span>
                     </div>
                     <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
                       Pending
@@ -154,24 +151,11 @@ const AdminPanel: React.FC = () => {
                 </CardHeader>
                 
                 <CardContent className="p-6">
-                  {suggestion.category && (
-                    <Badge variant="outline" className="mb-3">
-                      {suggestion.category}
-                    </Badge>
-                  )}
-                  
-                  {(suggestion.definition_english || suggestion.definition_arabic) && (
-                    <div className="mb-4 space-y-2">
-                      {suggestion.definition_english && (
-                        <p className="text-slate-600">
-                          <strong>Definition:</strong> {suggestion.definition_english}
-                        </p>
-                      )}
-                      {suggestion.definition_arabic && (
-                        <p className="text-slate-600 text-right">
-                          <strong>التعريف:</strong> {suggestion.definition_arabic}
-                        </p>
-                      )}
+                  {suggestion.reason && (
+                    <div className="mb-4">
+                      <p className="text-slate-600">
+                        <strong>Reason:</strong> {suggestion.reason}
+                      </p>
                     </div>
                   )}
                   
@@ -199,40 +183,40 @@ const AdminPanel: React.FC = () => {
           )}
         </TabsContent>
         
-        <TabsContent value="words" className="space-y-4">
+        <TabsContent value="terms" className="space-y-4">
           <div className="grid gap-4">
-            {allWords.map((word) => (
-              <Card key={word.id} className="border-l-4 border-l-green-500">
+            {allTerms.map((term) => (
+              <Card key={term.id} className="border-l-4 border-l-green-500">
                 <CardHeader className="bg-green-50">
                   <CardTitle className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
-                      <span>{word.english_term}</span>
+                      <span>{term.english_term}</span>
                       <span className="text-slate-400">→</span>
-                      <span className="text-right font-arabic">{word.arabic_translation}</span>
+                      <span className="text-right font-arabic">{term.arabic_term}</span>
                     </div>
                     <Badge 
-                      variant={word.status === 'approved' ? 'default' : 'secondary'}
-                      className={word.status === 'approved' ? 'bg-green-100 text-green-800' : ''}
+                      variant={term.status === 'approved' ? 'default' : 'secondary'}
+                      className={term.status === 'approved' ? 'bg-green-100 text-green-800' : ''}
                     >
-                      {word.status}
+                      {term.status}
                     </Badge>
                   </CardTitle>
                 </CardHeader>
                 
                 <CardContent className="p-4">
-                  {word.category && (
+                  {term.category && (
                     <Badge variant="outline" className="mb-2">
-                      {word.category}
+                      {term.category}
                     </Badge>
                   )}
                   
-                  {(word.definition_english || word.definition_arabic) && (
+                  {(term.description_en || term.description_ar) && (
                     <div className="space-y-1 text-sm">
-                      {word.definition_english && (
-                        <p className="text-slate-600">{word.definition_english}</p>
+                      {term.description_en && (
+                        <p className="text-slate-600">{term.description_en}</p>
                       )}
-                      {word.definition_arabic && (
-                        <p className="text-slate-600 text-right">{word.definition_arabic}</p>
+                      {term.description_ar && (
+                        <p className="text-slate-600 text-right">{term.description_ar}</p>
                       )}
                     </div>
                   )}

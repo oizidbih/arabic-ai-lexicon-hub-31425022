@@ -5,13 +5,13 @@ import Header from '@/components/Header'
 import SearchSection from '@/components/SearchSection'
 import SearchResults from '@/components/SearchResults'
 import AdminPanel from '@/components/AdminPanel'
-import { type Word } from '@/lib/supabase'
+import { type Term } from '@/lib/supabase'
 
 const Index = () => {
-  const [searchResults, setSearchResults] = useState<Word[]>([])
+  const [searchResults, setSearchResults] = useState<Term[]>([])
   const [isAdminMode, setIsAdminMode] = useState(false)
 
-  const handleSearchResults = (results: Word[]) => {
+  const handleSearchResults = (results: Term[]) => {
     setSearchResults(results)
   }
 

@@ -5,10 +5,10 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { useLanguage } from '@/contexts/LanguageContext'
-import { supabase, type Word } from '@/lib/supabase'
+import { supabase, type Term } from '@/lib/supabase'
 
 interface SearchSectionProps {
-  onResults: (results: Word[]) => void
+  onResults: (results: Term[]) => void
 }
 
 const SearchSection: React.FC<SearchSectionProps> = ({ onResults }) => {
@@ -22,13 +22,13 @@ const SearchSection: React.FC<SearchSectionProps> = ({ onResults }) => {
     setIsLoading(true)
     try {
       let query = supabase
-        .from('words')
+        .from('terms')
         .select('*')
         .eq('status', 'approved')
 
       // Search in both English and Arabic fields
       const { data, error } = await query.or(
-        `english_term.ilike.%${searchTerm}%,arabic_translation.ilike.%${searchTerm}%,definition_english.ilike.%${searchTerm}%,definition_arabic.ilike.%${searchTerm}%`
+        `english_term.ilike.%${searchTerm}%,arabic_term.ilike.%${searchTerm}%,description_en.ilike.%${searchTerm}%,description_ar.ilike.%${searchTerm}%`
       )
 
       if (error) throw error

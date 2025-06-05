@@ -7,33 +7,31 @@ const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 export const supabase = createClient(supabaseUrl, supabaseKey)
 
 // Database types
-export interface Word {
-  id: number
+export interface Term {
+  id: string
   english_term: string
-  arabic_translation: string
-  definition_english?: string
-  definition_arabic?: string
+  arabic_term?: string
+  description_en?: string
+  description_ar?: string
   category?: string
   status: 'approved' | 'pending' | 'rejected'
   created_at: string
-  updated_at: string
+  updated_at?: string
 }
 
 export interface Suggestion {
-  id: number
-  english_term: string
-  suggested_arabic: string
-  definition_english?: string
-  definition_arabic?: string
-  category?: string
+  id: string
+  term_id: string
+  suggested_arabic_term: string
+  reason?: string
   status: 'pending' | 'approved' | 'rejected'
   created_at: string
+  admin_notes?: string
 }
 
 export interface Comment {
-  id: number
-  word_id: number
-  comment_text: string
-  language: 'en' | 'ar'
+  id: string
+  term_id: string
+  comment: string
   created_at: string
 }
