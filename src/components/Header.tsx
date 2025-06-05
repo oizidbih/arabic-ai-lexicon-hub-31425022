@@ -72,8 +72,17 @@ const Header: React.FC<HeaderProps> = ({ onAdminClick, isAdminMode }) => {
                   }`}
                   disabled={!isAdmin}
                 >
-                  {isAdmin ? <User className="h-4 w-4" /> : <Lock className="h-4 w-4" />}
-                  <span>{t('adminPanel')}</span>
+                  {isAdmin ? (
+                    isAdminMode ? <Search className="h-4 w-4" /> : <User className="h-4 w-4" />
+                  ) : (
+                    <Lock className="h-4 w-4" />
+                  )}
+                  <span>
+                    {isAdminMode 
+                      ? (language === 'en' ? 'Search' : 'البحث')
+                      : t('adminPanel')
+                    }
+                  </span>
                 </Button>
                 
                 <Button
