@@ -23,17 +23,12 @@ const SearchSection: React.FC<SearchSectionProps> = ({ onResults }) => {
     console.log('Starting search for:', searchTerm)
     setIsLoading(true)
     try {
-      let query = supabase
+      // Create a fresh supabase client instance to ensure clean state
+      const { data, error } = await supabase
         .from('terms')
         .select('*')
         .eq('status', 'approved')
-
-      console.log('Search query configured, executing...')
-      
-      // Search in both English and Arabic fields
-      const { data, error } = await query.or(
-        `english_term.ilike.%${searchTerm}%,arabic_term.ilike.%${searchTerm}%,description_en.ilike.%${searchTerm}%,description_ar.ilike.%${searchTerm}%`
-      )
+        .or(`english_term.ilike.%${searchTerm}%,arabic_term.ilike.%${searchTerm}%,description_en.ilike.%${searchTerm}%,description_ar.ilike.%${searchTerm}%`)
 
       console.log('Search results:', data)
       console.log('Search error:', error)
