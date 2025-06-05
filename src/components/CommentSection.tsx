@@ -8,10 +8,10 @@ import { supabase, type Comment } from '@/lib/supabase'
 import { toast } from '@/hooks/use-toast'
 
 interface CommentSectionProps {
-  wordId: number
+  termId: string
 }
 
-const CommentSection: React.FC<CommentSectionProps> = ({ wordId }) => {
+const CommentSection: React.FC<CommentSectionProps> = ({ termId }) => {
   const { t, language } = useLanguage()
   const [comments, setComments] = useState<Comment[]>([])
   const [newComment, setNewComment] = useState('')
@@ -20,15 +20,15 @@ const CommentSection: React.FC<CommentSectionProps> = ({ wordId }) => {
 
   useEffect(() => {
     loadComments()
-  }, [wordId])
+  }, [termId])
 
   const loadComments = async () => {
     setIsLoading(true)
     try {
       const { data, error } = await supabase
-        .from('comments')
+        .from('feedback')
         .select('*')
-        .eq('word_id', wordId)
+        .eq('term_id', termId)
         .order('created_at', { ascending: false })
 
       if (error) throw error
@@ -46,11 +46,10 @@ const CommentSection: React.FC<CommentSectionProps> = ({ wordId }) => {
     setIsSubmitting(true)
     try {
       const { error } = await supabase
-        .from('comments')
+        .from('feedback')
         .insert([{
-          word_id: wordId,
-          comment_text: newComment,
-          language: language
+          term_id: termId,
+          comment: newComment
         }])
 
       if (error) throw error
@@ -105,8 +104,8 @@ const CommentSection: React.FC<CommentSectionProps> = ({ wordId }) => {
         <div className="space-y-3 max-h-60 overflow-y-auto">
           {comments.map((comment) => (
             <Card key={comment.id} className="p-3 bg-slate-50">
-              <p className={`text-sm ${comment.language === 'ar' ? 'text-right font-arabic' : ''}`}>
-                {comment.comment_text}
+              <p className="text-sm">
+                {comment.comment}
               </p>
               <p className="text-xs text-slate-400 mt-1">
                 {new Date(comment.created_at).toLocaleDateString()}
