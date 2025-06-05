@@ -21,36 +21,63 @@ const SearchSection: React.FC<SearchSectionProps> = ({ onResults }) => {
     if (!searchTerm.trim()) return
 
     console.log('Starting search for:', searchTerm)
-    console.log('Current user session:', await supabase.auth.getSession())
     setIsLoading(true)
     
     try {
-      // Try a simple query first to test connection
-      console.log('Testing basic connection...')
-      const testQuery = await supabase.from('terms').select('count', { count: 'exact' })
-      console.log('Basic connection test result:', testQuery)
-
-      // Now try the actual search
-      console.log('Executing search query...')
-      const searchPattern = `%${searchTerm.trim()}%`
-      console.log('Search pattern:', searchPattern)
+      // First, let's check what terms exist in the database
+      console.log('Checking all terms in database...')
+      const { data: allTerms, error: allTermsError } = await supabase
+        .from('terms')
+        .select('*')
       
-      const { data, error } = await supabase
+      console.log('All terms in database:', allTerms)
+      console.log('All terms error:', allTermsError)
+
+      // Check specifically for approved terms
+      console.log('Checking approved terms...')
+      const { data: approvedTerms, error: approvedError } = await supabase
         .from('terms')
         .select('*')
         .eq('status', 'approved')
+      
+      console.log('Approved terms:', approvedTerms)
+      console.log('Approved terms error:', approvedError)
+
+      // Now try the search - if no approved terms, search all terms
+      const searchPattern = `%${searchTerm.trim()}%`
+      console.log('Search pattern:', searchPattern)
+      
+      // Try searching without status filter first
+      const { data: searchResults, error: searchError } = await supabase
+        .from('terms')
+        .select('*')
         .or(`english_term.ilike.${searchPattern},arabic_term.ilike.${searchPattern},description_en.ilike.${searchPattern},description_ar.ilike.${searchPattern}`)
 
-      console.log('Raw search results:', data)
-      console.log('Search error details:', error)
+      console.log('Search results (all statuses):', searchResults)
+      console.log('Search error:', searchError)
 
-      if (error) {
-        console.error('Search error:', error)
-        throw error
+      if (searchError) {
+        console.error('Search error:', searchError)
+        throw searchError
       }
       
-      console.log('Calling onResults with data:', data || [])
-      onResults(data || [])
+      // If we have results, use them; otherwise try approved only
+      let finalResults = searchResults || []
+      
+      if (finalResults.length === 0) {
+        console.log('No results found in general search, trying approved only...')
+        const { data: approvedSearchResults, error: approvedSearchError } = await supabase
+          .from('terms')
+          .select('*')
+          .eq('status', 'approved')
+          .or(`english_term.ilike.${searchPattern},arabic_term.ilike.${searchPattern},description_en.ilike.${searchPattern},description_ar.ilike.${searchPattern}`)
+        
+        console.log('Approved search results:', approvedSearchResults)
+        finalResults = approvedSearchResults || []
+      }
+      
+      console.log('Final results to display:', finalResults)
+      onResults(finalResults)
     } catch (error) {
       console.error('Search failed:', error)
       onResults([])
