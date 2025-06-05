@@ -29,6 +29,20 @@ export interface Suggestion {
   admin_notes?: string
 }
 
+export interface EditSuggestion {
+  id: string
+  term_id: string
+  user_id: string
+  suggested_english_term?: string
+  suggested_arabic_term?: string
+  suggested_description_en?: string
+  suggested_description_ar?: string
+  change_reason?: string
+  status: 'pending' | 'approved' | 'rejected'
+  created_at: string
+  admin_notes?: string
+}
+
 export interface Comment {
   id: string
   term_id: string

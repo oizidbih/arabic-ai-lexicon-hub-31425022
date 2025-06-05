@@ -3,10 +3,13 @@ import React, { useState } from 'react'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Edit } from 'lucide-react'
 import { useLanguage } from '@/contexts/LanguageContext'
+import { useAuth } from '@/contexts/AuthContext'
 import { type Term } from '@/lib/supabase'
 import SuggestionForm from './SuggestionForm'
 import CommentSection from './CommentSection'
+import EditTermForm from './EditTermForm'
 
 interface SearchResultsProps {
   results: Term[]
@@ -14,8 +17,10 @@ interface SearchResultsProps {
 
 const SearchResults: React.FC<SearchResultsProps> = ({ results }) => {
   const { t, language } = useLanguage()
+  const { user } = useAuth()
   const [selectedTerm, setSelectedTerm] = useState<Term | null>(null)
   const [showSuggestionForm, setShowSuggestionForm] = useState(false)
+  const [editingTerm, setEditingTerm] = useState<Term | null>(null)
 
   if (results.length === 0) {
     return (
@@ -64,6 +69,17 @@ const SearchResults: React.FC<SearchResultsProps> = ({ results }) => {
                     </Badge>
                   )}
                 </div>
+                {user && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setEditingTerm(term)}
+                    className="border-blue-200 text-blue-600 hover:bg-blue-50"
+                  >
+                    <Edit className="h-4 w-4 mr-1" />
+                    تعديل
+                  </Button>
+                )}
               </div>
             </CardHeader>
             
@@ -106,6 +122,16 @@ const SearchResults: React.FC<SearchResultsProps> = ({ results }) => {
 
       {showSuggestionForm && (
         <SuggestionForm onClose={() => setShowSuggestionForm(false)} />
+      )}
+
+      {editingTerm && (
+        <EditTermForm 
+          term={editingTerm}
+          onClose={() => setEditingTerm(null)}
+          onSuccess={() => {
+            // Optionally refresh results or show success message
+          }}
+        />
       )}
     </div>
   )
