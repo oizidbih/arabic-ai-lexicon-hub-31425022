@@ -75,7 +75,7 @@ const translations = {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined)
 
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [language, setLanguage] = useState<Language>('en')
+  const [language, setLanguage] = useState<Language>('ar')
   const direction: Direction = language === 'ar' ? 'rtl' : 'ltr'
 
   useEffect(() => {
