@@ -53,7 +53,7 @@ const Header: React.FC<HeaderProps> = ({ onAdminClick, isAdminMode }) => {
             <Button
               onClick={toggleLanguage}
               variant="outline"
-              className="border-blue-300 text-blue-100 hover:bg-blue-800 hover:border-blue-200"
+              className="border-white/30 text-white bg-white/10 hover:bg-white/20 hover:border-white/50 font-medium"
             >
               {language === 'en' ? 'العربية' : 'English'}
             </Button>
@@ -63,12 +63,12 @@ const Header: React.FC<HeaderProps> = ({ onAdminClick, isAdminMode }) => {
                 <Button
                   onClick={handleAdminClick}
                   variant={isAdminMode ? "default" : "secondary"}
-                  className={`flex items-center space-x-2 ${
+                  className={`flex items-center space-x-2 font-medium ${
                     isAdminMode 
-                      ? 'bg-gradient-to-r from-teal-500 to-blue-500 hover:from-teal-600 hover:to-blue-600' 
+                      ? 'bg-gradient-to-r from-teal-500 to-blue-500 hover:from-teal-600 hover:to-blue-600 text-white' 
                       : isAdmin 
-                        ? 'bg-slate-700 hover:bg-slate-600'
-                        : 'bg-slate-600 opacity-50 cursor-not-allowed'
+                        ? 'bg-white/20 hover:bg-white/30 text-white border-white/30'
+                        : 'bg-slate-600/50 opacity-50 cursor-not-allowed text-white/70'
                   }`}
                   disabled={!isAdmin}
                 >
@@ -79,7 +79,7 @@ const Header: React.FC<HeaderProps> = ({ onAdminClick, isAdminMode }) => {
                 <Button
                   onClick={handleSignOut}
                   variant="outline"
-                  className="border-red-300 text-red-100 hover:bg-red-800 hover:border-red-200"
+                  className="border-red-300/50 text-white bg-red-500/20 hover:bg-red-500/30 hover:border-red-300/70 font-medium"
                 >
                   <LogOut className="h-4 w-4 mr-2" />
                   {language === 'en' ? 'Sign Out' : 'تسجيل الخروج'}
@@ -89,7 +89,7 @@ const Header: React.FC<HeaderProps> = ({ onAdminClick, isAdminMode }) => {
               <Button
                 onClick={() => navigate('/auth')}
                 variant="secondary"
-                className="bg-slate-700 hover:bg-slate-600"
+                className="bg-white/20 hover:bg-white/30 text-white border-white/30 font-medium"
               >
                 <User className="h-4 w-4 mr-2" />
                 {language === 'en' ? 'Sign In' : 'تسجيل الدخول'}
