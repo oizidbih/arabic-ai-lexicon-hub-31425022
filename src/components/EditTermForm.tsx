@@ -57,7 +57,7 @@ const EditTermForm: React.FC<EditTermFormProps> = ({ term, onClose, onSuccess })
 
     setIsSubmitting(true)
     try {
-      const suggestionData = {
+      const suggestionData: any = {
         term_id: term.id,
         user_id: user.id,
         change_reason: formData.change_reason,
