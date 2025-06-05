@@ -15,6 +15,7 @@ const SearchSection: React.FC<SearchSectionProps> = ({ onResults }) => {
   const [searchTerm, setSearchTerm] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const { t, language } = useLanguage()
+  const isArabic = language === 'ar'
 
   const handleSearch = async () => {
     if (!searchTerm.trim()) return
@@ -63,19 +64,26 @@ const SearchSection: React.FC<SearchSectionProps> = ({ onResults }) => {
         </div>
         
         <div className="relative">
-          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 h-5 w-5" />
+          <Search className={`absolute top-1/2 transform -translate-y-1/2 text-slate-400 h-5 w-5 ${
+            isArabic ? 'right-4' : 'left-4'
+          }`} />
           <Input
             type="text"
             placeholder={t('searchPlaceholder')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             onKeyPress={handleKeyPress}
-            className="pl-12 pr-4 py-6 text-lg border-2 border-blue-200 focus:border-blue-400 rounded-xl bg-white"
+            className={`py-6 text-lg border-2 border-blue-200 focus:border-blue-400 rounded-xl bg-white ${
+              isArabic ? 'pr-12 pl-4' : 'pl-12 pr-4'
+            }`}
+            dir={isArabic ? 'rtl' : 'ltr'}
           />
           <Button
             onClick={handleSearch}
             disabled={isLoading}
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-600 hover:to-teal-600 rounded-lg px-6"
+            className={`absolute top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-600 hover:to-teal-600 rounded-lg px-6 ${
+              isArabic ? 'left-2' : 'right-2'
+            }`}
           >
             {isLoading ? t('loading') : t('searchInEnglish')}
           </Button>
