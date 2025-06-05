@@ -23,7 +23,7 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-teal-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-teal-50 pb-20">
       <Header onAdminClick={toggleAdminMode} isAdminMode={isAdminMode} />
       
       <main className="container mx-auto px-4 py-8">
@@ -39,7 +39,7 @@ const Index = () => {
         )}
       </main>
       
-      <footer className="bg-slate-900 text-white py-8 mt-16">
+      <footer className="bg-slate-900 text-white py-8 fixed bottom-0 left-0 right-0 z-10">
         <div className="container mx-auto px-4 text-center">
           <p className="text-slate-400">
             AI Arabic Dictionary - Bridging technology terminology across languages
