@@ -1,8 +1,10 @@
 
 import React from 'react'
-import { Search, User } from 'lucide-react'
+import { Search, User, LogOut, Lock } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useLanguage } from '@/contexts/LanguageContext'
+import { useAuth } from '@/contexts/AuthContext'
+import { useNavigate } from 'react-router-dom'
 
 interface HeaderProps {
   onAdminClick: () => void
@@ -11,6 +13,23 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ onAdminClick, isAdminMode }) => {
   const { language, toggleLanguage, t, direction } = useLanguage()
+  const { user, isAdmin, signOut } = useAuth()
+  const navigate = useNavigate()
+
+  const handleAdminClick = () => {
+    if (!user) {
+      navigate('/auth')
+      return
+    }
+    if (!isAdmin) {
+      return
+    }
+    onAdminClick()
+  }
+
+  const handleSignOut = async () => {
+    await signOut()
+  }
 
   return (
     <header className="bg-gradient-to-r from-slate-900 via-blue-900 to-slate-900 text-white shadow-2xl">
@@ -39,18 +58,43 @@ const Header: React.FC<HeaderProps> = ({ onAdminClick, isAdminMode }) => {
               {language === 'en' ? 'العربية' : 'English'}
             </Button>
             
-            <Button
-              onClick={onAdminClick}
-              variant={isAdminMode ? "default" : "secondary"}
-              className={`flex items-center space-x-2 ${
-                isAdminMode 
-                  ? 'bg-gradient-to-r from-teal-500 to-blue-500 hover:from-teal-600 hover:to-blue-600' 
-                  : 'bg-slate-700 hover:bg-slate-600'
-              }`}
-            >
-              <User className="h-4 w-4" />
-              <span>{t('adminPanel')}</span>
-            </Button>
+            {user ? (
+              <>
+                <Button
+                  onClick={handleAdminClick}
+                  variant={isAdminMode ? "default" : "secondary"}
+                  className={`flex items-center space-x-2 ${
+                    isAdminMode 
+                      ? 'bg-gradient-to-r from-teal-500 to-blue-500 hover:from-teal-600 hover:to-blue-600' 
+                      : isAdmin 
+                        ? 'bg-slate-700 hover:bg-slate-600'
+                        : 'bg-slate-600 opacity-50 cursor-not-allowed'
+                  }`}
+                  disabled={!isAdmin}
+                >
+                  {isAdmin ? <User className="h-4 w-4" /> : <Lock className="h-4 w-4" />}
+                  <span>{t('adminPanel')}</span>
+                </Button>
+                
+                <Button
+                  onClick={handleSignOut}
+                  variant="outline"
+                  className="border-red-300 text-red-100 hover:bg-red-800 hover:border-red-200"
+                >
+                  <LogOut className="h-4 w-4 mr-2" />
+                  {language === 'en' ? 'Sign Out' : 'تسجيل الخروج'}
+                </Button>
+              </>
+            ) : (
+              <Button
+                onClick={() => navigate('/auth')}
+                variant="secondary"
+                className="bg-slate-700 hover:bg-slate-600"
+              >
+                <User className="h-4 w-4 mr-2" />
+                {language === 'en' ? 'Sign In' : 'تسجيل الدخول'}
+              </Button>
+            )}
           </div>
         </div>
       </div>

@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react'
 import { LanguageProvider } from '@/contexts/LanguageContext'
+import { useAuth } from '@/contexts/AuthContext'
 import Header from '@/components/Header'
 import SearchSection from '@/components/SearchSection'
 import SearchResults from '@/components/SearchResults'
@@ -10,13 +11,16 @@ import { type Term } from '@/lib/supabase'
 const Index = () => {
   const [searchResults, setSearchResults] = useState<Term[]>([])
   const [isAdminMode, setIsAdminMode] = useState(false)
+  const { isAdmin } = useAuth()
 
   const handleSearchResults = (results: Term[]) => {
     setSearchResults(results)
   }
 
   const toggleAdminMode = () => {
-    setIsAdminMode(!isAdminMode)
+    if (isAdmin) {
+      setIsAdminMode(!isAdminMode)
+    }
   }
 
   return (
@@ -25,7 +29,7 @@ const Index = () => {
         <Header onAdminClick={toggleAdminMode} isAdminMode={isAdminMode} />
         
         <main className="container mx-auto px-4 py-8">
-          {isAdminMode ? (
+          {isAdminMode && isAdmin ? (
             <AdminPanel />
           ) : (
             <div className="space-y-8">
