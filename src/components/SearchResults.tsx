@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -25,12 +24,14 @@ const SearchResults: React.FC<SearchResultsProps> = ({ results }) => {
   if (results.length === 0) {
     return (
       <Card className="p-8 text-center bg-slate-50">
-        <p className="text-slate-600 text-lg">{t('noResults')}</p>
+        <p className={`text-slate-600 text-lg ${language === 'ar' ? 'text-right font-arabic' : 'text-left'}`}>
+          {language === 'ar' ? 'لم يتم العثور على نتائج' : 'No results found'}
+        </p>
         <Button
           onClick={() => setShowSuggestionForm(true)}
           className="mt-4 bg-gradient-to-r from-teal-500 to-blue-500 hover:from-teal-600 hover:to-blue-600"
         >
-          {t('suggestTranslation')}
+          {language === 'ar' ? 'اقتراح ترجمة' : 'Suggest Translation'}
         </Button>
       </Card>
     )
