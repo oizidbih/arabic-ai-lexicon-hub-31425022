@@ -9,11 +9,13 @@ import { type Term } from '@/lib/supabase'
 
 const Index = () => {
   const [searchResults, setSearchResults] = useState<Term[]>([])
+  const [hasSearched, setHasSearched] = useState(false)
   const [isAdminMode, setIsAdminMode] = useState(false)
   const { isAdmin } = useAuth()
 
   const handleSearchResults = (results: Term[]) => {
     setSearchResults(results)
+    setHasSearched(true)
   }
 
   const toggleAdminMode = () => {
@@ -32,7 +34,7 @@ const Index = () => {
         ) : (
           <div className="space-y-8">
             <SearchSection onResults={handleSearchResults} />
-            {searchResults.length > 0 && (
+            {hasSearched && (
               <SearchResults results={searchResults} />
             )}
           </div>
