@@ -37,17 +37,17 @@ const SearchResults: React.FC<SearchResultsProps> = ({ results }) => {
   }
 
   return (
-    <div className="space-y-6 text-right">
-      <div className="flex items-center justify-end">
-        <Button
-          onClick={() => setShowSuggestionForm(true)}
-          className="bg-gradient-to-r from-teal-500 to-blue-500 hover:from-teal-600 hover:to-blue-600 ml-4"
-        >
-          {t('suggestTranslation')}
-        </Button>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
         <h3 className="text-2xl font-bold text-slate-800">
           {t('searchResults')} ({results.length})
         </h3>
+        <Button
+          onClick={() => setShowSuggestionForm(true)}
+          className="bg-gradient-to-r from-teal-500 to-blue-500 hover:from-teal-600 hover:to-blue-600"
+        >
+          {t('suggestTranslation')}
+        </Button>
       </div>
 
       <div className="grid gap-6">
@@ -55,20 +55,18 @@ const SearchResults: React.FC<SearchResultsProps> = ({ results }) => {
           <Card key={term.id} className="overflow-hidden border-l-4 border-l-blue-500 hover:shadow-lg transition-shadow">
             <CardHeader className="bg-gradient-to-r from-blue-50 to-teal-50">
               <div className="flex items-start justify-between">
-                <div className="flex-1 text-right">
+                <div className="flex-1">
                   <CardTitle className="text-xl mb-2">
-                    <div className="flex items-center justify-end space-x-4 space-x-reverse">
-                      <span className="text-slate-800 font-arabic">{term.arabic_term}</span>
-                      <span className="text-slate-400">←</span>
+                    <div className="flex items-center space-x-4">
                       <span className="text-slate-800">{term.english_term}</span>
+                      <span className="text-slate-400">→</span>
+                      <span className="text-slate-800 font-arabic text-right">{term.arabic_term}</span>
                     </div>
                   </CardTitle>
                   {term.category && (
-                    <div className="flex justify-end">
-                      <Badge variant="secondary" className="bg-blue-100 text-blue-800">
-                        {term.category}
-                      </Badge>
-                    </div>
+                    <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                      {term.category}
+                    </Badge>
                   )}
                 </div>
                 {user && (
@@ -76,32 +74,32 @@ const SearchResults: React.FC<SearchResultsProps> = ({ results }) => {
                     variant="outline"
                     size="sm"
                     onClick={() => setEditingTerm(term)}
-                    className="border-blue-200 text-blue-600 hover:bg-blue-50 mr-4"
+                    className="border-blue-200 text-blue-600 hover:bg-blue-50"
                   >
-                    <Edit className="h-4 w-4 ml-1" />
+                    <Edit className="h-4 w-4 mr-1" />
                     تعديل
                   </Button>
                 )}
               </div>
             </CardHeader>
             
-            <CardContent className="p-6 text-right">
+            <CardContent className="p-6">
               {(term.description_en || term.description_ar) && (
                 <div className="mb-4 space-y-2">
+                  {term.description_en && (
+                    <p className="text-slate-600">
+                      <strong>Definition:</strong> {term.description_en}
+                    </p>
+                  )}
                   {term.description_ar && (
                     <p className="text-slate-600 text-right font-arabic">
                       <strong>التعريف:</strong> {term.description_ar}
                     </p>
                   )}
-                  {term.description_en && (
-                    <p className="text-slate-600 text-right">
-                      <strong>Definition:</strong> {term.description_en}
-                    </p>
-                  )}
                 </div>
               )}
               
-              <div className="flex justify-end space-x-2 space-x-reverse">
+              <div className="flex space-x-2">
                 <Button
                   variant="outline"
                   size="sm"
