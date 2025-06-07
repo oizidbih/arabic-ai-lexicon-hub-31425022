@@ -33,14 +33,19 @@ const SearchSection: React.FC<SearchSectionProps> = ({ onResults }) => {
         .from("terms")
         .select("*")
         .or(
-          `english_term.ilike.${searchPattern},arabic_term.ilike.${searchPattern},description_en.ilike.${searchPattern},description_ar.ilike.${searchPattern}`
+          `english_term.ilike.${searchPattern},` +
+            `arabic_term.ilike.${searchPattern},` +
+            `description_en.ilike.${searchPattern},` +
+            `description_ar.ilike.${searchPattern}`
         );
 
       // If user is not logged in, only show approved terms
+      // If user is logged in, show approved, pending and rejected terms
       if (!user) {
         query = query.eq("status", "approved");
       }
 
+      console.log("User auth state:", user ? "logged in" : "logged out");
       const { data: searchResults, error: searchError } = await query;
 
       console.log("Search results:", searchResults);
@@ -99,7 +104,7 @@ const SearchSection: React.FC<SearchSectionProps> = ({ onResults }) => {
           <Button
             onClick={handleSearch}
             disabled={isLoading}
-            className={`absolute top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-600 hover:to-teal-600 rounded-lg px-6 ${
+            className={`absolute top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-600 hover:to-blue-600 rounded-lg px-6 ${
               isArabic ? "left-2" : "right-2"
             }`}
           >
