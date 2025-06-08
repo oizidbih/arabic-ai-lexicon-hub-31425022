@@ -398,7 +398,7 @@ const AdminPanel: React.FC = () => {
                         {suggestion.suggested_arabic_term}
                       </span>
                     </div>
-                    <div className={`flex items-center space-x-2 ${language === "ar" ? "order-first" : ""}`}>
+                    <div className="flex items-center space-x-2">
                       <Button
                         size="sm"
                         variant="outline"
