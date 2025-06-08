@@ -365,7 +365,7 @@ const AdminPanel: React.FC = () => {
           <TabsTrigger value="suggestions">
             {t("pendingSuggestions")} ({pendingSuggestions.length})
           </TabsTrigger>
-          <TabsTrigger value="edits">
+          <TabsTrigger value="edits" className="font-arabic">
             تعديلات معلقة ({pendingEdits.length})
           </TabsTrigger>
           <TabsTrigger value="terms">
@@ -486,7 +486,7 @@ const AdminPanel: React.FC = () => {
                     <span>تعديل مقترح للمصطلح: {edit.term_id}</span>
                     <Badge
                       variant="secondary"
-                      className="bg-orange-100 text-orange-800"
+                      className="bg-orange-100 text-orange-800 font-arabic"
                     >
                       معلق
                     </Badge>
@@ -531,13 +531,13 @@ const AdminPanel: React.FC = () => {
                       onClick={() => handleApproveEdit(edit)}
                       className="bg-green-600 hover:bg-green-700"
                     >
-                      قبول
+                      <span className="font-arabic">قبول</span>
                     </Button>
                     <Button
                       onClick={() => handleRejectEdit(edit.id)}
                       variant="destructive"
                     >
-                      رفض
+                      <span className="font-arabic">رفض</span>
                     </Button>
                   </div>
 
@@ -586,7 +586,7 @@ const AdminPanel: React.FC = () => {
                         <p className="text-slate-600">{term.description_en}</p>
                       )}
                       {term.description_ar && (
-                        <p className="text-slate-600 text-right">
+                        <p className="text-slate-600 text-right font-arabic">
                           {term.description_ar}
                         </p>
                       )}
@@ -604,7 +604,7 @@ const AdminPanel: React.FC = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <CardHeader className="bg-gradient-to-r from-yellow-50 to-orange-50">
-              <CardTitle className="text-xl text-slate-800">
+              <CardTitle className="text-xl text-slate-800 font-arabic">
                 تعديل الاقتراح
               </CardTitle>
             </CardHeader>
@@ -696,7 +696,7 @@ const AdminPanel: React.FC = () => {
                     type="submit"
                     className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600"
                   >
-                    حفظ التعديلات
+                    <span className="font-arabic">حفظ التعديلات</span>
                   </Button>
                 </div>
               </form>

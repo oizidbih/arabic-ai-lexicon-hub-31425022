@@ -18,6 +18,10 @@ export default {
 			}
 		},
 		extend: {
+			fontFamily: {
+				'arabic': ['Calibri Light', 'Calibri', 'Arial', 'sans-serif'],
+				'heading': ['Calibri', 'Arial', 'sans-serif'],
+			},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',

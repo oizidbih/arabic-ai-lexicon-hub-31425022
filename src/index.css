@@ -1,6 +1,3 @@
-
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -95,8 +92,27 @@
     @apply bg-background text-foreground;
   }
 
+  /* Arabic Text Styles */
+  .arabic-text {
+    font-family: 'Calibri Light', Calibri, Arial, sans-serif;
+  }
+
+  [dir="rtl"] {
+    font-family: 'Calibri Light', Calibri, Arial, sans-serif;
+  }
+
   .font-arabic {
-    font-family: 'Noto Sans Arabic', sans-serif;
+    font-family: 'Calibri Light', Calibri, Arial, sans-serif;
+  }
+
+  h1[dir="rtl"],
+  h2[dir="rtl"],
+  h3[dir="rtl"],
+  h4[dir="rtl"],
+  h5[dir="rtl"],
+  h6[dir="rtl"] {
+    font-family: Calibri, Arial, sans-serif;
+    font-weight: 600;
   }
 
   /* RTL support */

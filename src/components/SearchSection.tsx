@@ -97,7 +97,7 @@ const SearchSection: React.FC<SearchSectionProps> = ({ onResults }) => {
             onChange={(e) => setSearchTerm(e.target.value)}
             onKeyPress={handleKeyPress}
             className={`py-6 text-lg border-2 border-blue-200 focus:border-blue-400 rounded-xl bg-white ${
-              isArabic ? "pr-12 pl-4" : "pl-12 pr-4"
+              isArabic ? "pr-12 pl-4 font-arabic" : "pl-12 pr-4"
             }`}
             dir={isArabic ? "rtl" : "ltr"}
           />
