@@ -19,7 +19,7 @@ const EditTermForm: React.FC<EditTermFormProps> = ({
   onClose,
   onSuccess,
 }) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { user } = useAuth();
   const [formData, setFormData] = useState({
     english_term: term.english_term,
@@ -35,8 +35,8 @@ const EditTermForm: React.FC<EditTermFormProps> = ({
 
     if (!user) {
       toast({
-        title: "خطأ",
-        description: "يجب تسجيل الدخول لإرسال التعديلات",
+        title: t("error"),
+        description: t("mustBeLoggedInToEdit"),
         variant: "destructive",
       });
       return;
@@ -51,8 +51,8 @@ const EditTermForm: React.FC<EditTermFormProps> = ({
 
     if (!hasChanges) {
       toast({
-        title: "تنبيه",
-        description: "لم يتم إجراء أي تعديلات",
+        title: t("Warning"),
+        description: t("No changes detected"),
         variant: "destructive",
       });
       return;
@@ -88,16 +88,16 @@ const EditTermForm: React.FC<EditTermFormProps> = ({
       if (error) throw error;
 
       toast({
-        title: t("success"),
-        description: "تم إرسال اقتراح التعديل للمراجعة",
+        title: t("Success"),
+        description: t("Edit suggestion submitted"),
       });
       onSuccess();
       onClose();
     } catch (error) {
       console.error("Error submitting edit suggestion:", error);
       toast({
-        title: t("error"),
-        description: "فشل في إرسال اقتراح التعديل",
+        title: t("Error"),
+        description: t("Error submitting edit"),
         variant: "destructive",
       });
     } finally {
@@ -109,16 +109,24 @@ const EditTermForm: React.FC<EditTermFormProps> = ({
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <CardHeader className="bg-gradient-to-r from-blue-50 to-teal-50">
-          <CardTitle className="text-xl text-slate-800">
-            تعديل المصطلح
+          <CardTitle
+            className={`text-xl text-slate-800 ${
+              language === "ar" ? "text-right" : ""
+            }`}
+          >
+            {t("Edit Term")}
           </CardTitle>
         </CardHeader>
 
         <CardContent className="p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                {t("englishTerm")} *
+              <label
+                className={`block text-sm font-medium text-slate-700 mb-2 ${
+                  language === "ar" ? "text-right" : ""
+                }`}
+              >
+                {t("English Term")} *
               </label>
               <Input
                 value={formData.english_term}
@@ -130,8 +138,12 @@ const EditTermForm: React.FC<EditTermFormProps> = ({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                {t("arabicTranslation")} *
+              <label
+                className={`block text-sm font-medium text-slate-700 mb-2 ${
+                  language === "ar" ? "text-right" : ""
+                }`}
+              >
+                {t("Arabic Translation")} *
               </label>
               <Input
                 value={formData.arabic_term}
@@ -145,8 +157,12 @@ const EditTermForm: React.FC<EditTermFormProps> = ({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                التعريف بالإنجليزية
+              <label
+                className={`block text-sm font-medium text-slate-700 mb-2 ${
+                  language === "ar" ? "text-right" : ""
+                }`}
+              >
+                {t("English Definition")}
               </label>
               <Textarea
                 value={formData.description_en}
@@ -158,8 +174,12 @@ const EditTermForm: React.FC<EditTermFormProps> = ({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                التعريف بالعربية
+              <label
+                className={`block text-sm font-medium text-slate-700 mb-2 ${
+                  language === "ar" ? "text-right" : ""
+                }`}
+              >
+                {t("Arabic Definition")}
               </label>
               <Textarea
                 value={formData.description_ar}
@@ -173,36 +193,45 @@ const EditTermForm: React.FC<EditTermFormProps> = ({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                سبب التعديل (اختياري)
+              <label
+                className={`block text-sm font-medium text-slate-700 mb-2 ${
+                  language === "ar" ? "text-right" : ""
+                }`}
+              >
+                {t("Edit Reason")}
               </label>
               <Textarea
                 value={formData.change_reason}
                 onChange={(e) =>
                   setFormData({ ...formData, change_reason: e.target.value })
                 }
-                placeholder="اشرح سبب التعديل المقترح..."
-                className="text-right"
-                dir="rtl"
+                placeholder={t("Explain edit reason")}
+                className={language === "ar" ? "text-right font-arabic" : ""}
+                dir={language === "ar" ? "rtl" : "ltr"}
                 rows={2}
               />
             </div>
 
-            <div className="flex justify-end space-x-3 pt-4">
+            <div
+              className={`flex ${
+                language === "ar" ? "flex-row-reverse" : ""
+              } justify-end space-x-3 pt-4`}
+            >
               <Button
                 type="button"
                 variant="outline"
                 onClick={onClose}
                 disabled={isSubmitting}
+                className={language === "ar" ? "ml-3" : "mr-3"}
               >
-                {t("cancel")}
+                {t("Cancel")}
               </Button>
               <Button
                 type="submit"
                 disabled={isSubmitting}
                 className="bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-600 hover:to-teal-600"
               >
-                {isSubmitting ? t("loading") : "إرسال التعديل"}
+                {isSubmitting ? t("Loading") : t("Submit")}
               </Button>
             </div>
           </form>

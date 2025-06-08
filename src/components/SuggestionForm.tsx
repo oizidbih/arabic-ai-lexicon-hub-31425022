@@ -12,7 +12,7 @@ interface SuggestionFormProps {
 }
 
 const SuggestionForm: React.FC<SuggestionFormProps> = ({ onClose }) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [formData, setFormData] = useState({
     english_term: "",
     suggested_arabic: "",
@@ -26,8 +26,8 @@ const SuggestionForm: React.FC<SuggestionFormProps> = ({ onClose }) => {
     e.preventDefault();
     if (!formData.english_term || !formData.suggested_arabic) {
       toast({
-        title: "Error",
-        description: "Please fill in both English term and Arabic translation",
+        title: t("Error"),
+        description: t("Please enter both terms"),
         variant: "destructive",
       });
       return;
@@ -45,15 +45,15 @@ const SuggestionForm: React.FC<SuggestionFormProps> = ({ onClose }) => {
       if (error) throw error;
 
       toast({
-        title: t("success"),
-        description: "Your suggestion has been submitted for review",
+        title: t("Success"),
+        description: t("Suggestion submitted"),
       });
       onClose();
     } catch (error) {
       console.error("Error submitting suggestion:", error);
       toast({
-        title: t("error"),
-        description: "Failed to submit suggestion",
+        title: t("Error"),
+        description: t("Failed to submit"),
         variant: "destructive",
       });
     } finally {
@@ -65,16 +65,24 @@ const SuggestionForm: React.FC<SuggestionFormProps> = ({ onClose }) => {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <CardHeader className="bg-gradient-to-r from-teal-50 to-blue-50">
-          <CardTitle className="text-xl text-slate-800">
-            {t("suggestTranslation")}
+          <CardTitle
+            className={`text-xl text-slate-800 ${
+              language === "ar" ? "text-right" : ""
+            }`}
+          >
+            {t("Suggest Translation")}
           </CardTitle>
         </CardHeader>
 
         <CardContent className="p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                {t("englishTerm")} *
+              <label
+                className={`block text-sm font-medium text-slate-700 mb-2 ${
+                  language === "ar" ? "text-right" : ""
+                }`}
+              >
+                {t("English Term")} *
               </label>
               <Input
                 value={formData.english_term}
@@ -87,8 +95,12 @@ const SuggestionForm: React.FC<SuggestionFormProps> = ({ onClose }) => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                {t("arabicTranslation")} *
+              <label
+                className={`block text-sm font-medium text-slate-700 mb-2 ${
+                  language === "ar" ? "text-right" : ""
+                }`}
+              >
+                {t("Arabic Translation")} *
               </label>
               <Input
                 value={formData.suggested_arabic}
@@ -97,13 +109,18 @@ const SuggestionForm: React.FC<SuggestionFormProps> = ({ onClose }) => {
                 }
                 placeholder="مثال: تعلم الآلة"
                 className="text-right font-arabic"
+                dir="rtl"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                {t("category")}
+              <label
+                className={`block text-sm font-medium text-slate-700 mb-2 ${
+                  language === "ar" ? "text-right" : ""
+                }`}
+              >
+                {t("Category")}
               </label>
               <Input
                 value={formData.category}
@@ -111,12 +128,18 @@ const SuggestionForm: React.FC<SuggestionFormProps> = ({ onClose }) => {
                   setFormData({ ...formData, category: e.target.value })
                 }
                 placeholder="e.g., Machine Learning, NLP, Computer Vision"
+                dir={language === "ar" ? "rtl" : "ltr"}
+                className={language === "ar" ? "text-right" : ""}
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                Definition (English)
+              <label
+                className={`block text-sm font-medium text-slate-700 mb-2 ${
+                  language === "ar" ? "text-right" : ""
+                }`}
+              >
+                {t("English Definition")}
               </label>
               <Textarea
                 value={formData.definition_english}
@@ -126,14 +149,18 @@ const SuggestionForm: React.FC<SuggestionFormProps> = ({ onClose }) => {
                     definition_english: e.target.value,
                   })
                 }
-                placeholder="Optional definition in English"
+                placeholder={t("Optional English Definition")}
                 rows={3}
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2 font-arabic">
-                التعريف (العربية)
+              <label
+                className={`block text-sm font-medium text-slate-700 mb-2 ${
+                  language === "ar" ? "text-right" : ""
+                }`}
+              >
+                {t("Arabic Definition")}
               </label>
               <Textarea
                 value={formData.definition_arabic}
@@ -143,27 +170,33 @@ const SuggestionForm: React.FC<SuggestionFormProps> = ({ onClose }) => {
                     definition_arabic: e.target.value,
                   })
                 }
-                placeholder="تعريف اختياري بالعربية"
+                placeholder={t("Optional Arabic Definition")}
                 className="text-right font-arabic"
+                dir="rtl"
                 rows={3}
               />
             </div>
 
-            <div className="flex justify-end space-x-3 pt-4">
+            <div
+              className={`flex ${
+                language === "ar" ? "flex-row-reverse" : ""
+              } justify-end space-x-3 pt-4`}
+            >
               <Button
                 type="button"
                 variant="outline"
                 onClick={onClose}
                 disabled={isSubmitting}
+                className={language === "ar" ? "ml-3" : "mr-3"}
               >
-                {t("cancel")}
+                {t("Cancel")}
               </Button>
               <Button
                 type="submit"
                 disabled={isSubmitting}
                 className="bg-gradient-to-r from-teal-500 to-blue-500 hover:from-teal-600 hover:to-blue-600"
               >
-                {isSubmitting ? t("loading") : t("submit")}
+                {isSubmitting ? t("Loading") : t("Submit")}
               </Button>
             </div>
           </form>
