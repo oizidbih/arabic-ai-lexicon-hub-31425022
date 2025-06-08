@@ -356,7 +356,7 @@ const AdminPanel: React.FC = () => {
           {t("adminPanel")}
         </h2>
         <p className="text-slate-600">
-          Manage dictionary entries and user suggestions
+          {language === "ar" ? "إدارة إدخالات القاموس واقتراحات المستخدمين" : "Manage dictionary entries and user suggestions"}
         </p>
       </div>
 
