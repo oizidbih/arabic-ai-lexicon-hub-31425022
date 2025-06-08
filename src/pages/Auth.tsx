@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -67,8 +68,8 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-teal-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-md space-y-6">
-        <div className="text-center">
+      <div className="w-full max-w-md space-y-8">
+        <div className="text-center space-y-4">
           <Button
             variant="ghost"
             onClick={() => window.history.back()}
@@ -89,25 +90,27 @@ const Auth = () => {
         </div>
 
         <Card className="shadow-xl border-blue-200">
-          <CardHeader className="space-y-1 text-center">
-            <CardTitle className={`text-2xl ${language === "ar" ? "font-arabic" : ""}`}>
-              {isLogin
-                ? language === "en"
-                  ? "Sign In"
-                  : "تسجيل الدخول"
-                : language === "en"
-                ? "Create Account"
-                : "إنشاء حساب"}
-            </CardTitle>
-            <p className={`text-slate-600 ${language === "ar" ? "font-arabic" : ""}`}>
-              {isLogin
-                ? language === "en"
-                  ? "Enter your credentials to access the admin panel"
-                  : "أدخل بياناتك للوصول إلى لوحة الإدارة"
-                : language === "en"
-                ? "Create an account to get started"
-                : "أنشئ حسابًا للبدء"}
-            </p>
+          <CardHeader className="space-y-4 text-center">
+            <div className="space-y-2">
+              <CardTitle className={`text-2xl ${language === "ar" ? "font-arabic" : ""}`}>
+                {isLogin
+                  ? language === "en"
+                    ? "Sign In"
+                    : "تسجيل الدخول"
+                  : language === "en"
+                  ? "Create Account"
+                  : "إنشاء حساب"}
+              </CardTitle>
+              <p className={`text-slate-600 ${language === "ar" ? "font-arabic" : ""}`}>
+                {isLogin
+                  ? language === "en"
+                    ? "Enter your credentials to access the admin panel"
+                    : "أدخل بياناتك للوصول إلى لوحة الإدارة"
+                  : language === "en"
+                  ? "Create an account to get started"
+                  : "أنشئ حسابًا للبدء"}
+              </p>
+            </div>
           </CardHeader>
 
           <CardContent>
