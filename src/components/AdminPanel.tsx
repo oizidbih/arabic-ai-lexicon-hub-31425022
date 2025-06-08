@@ -30,7 +30,7 @@ interface EditingSuggestion extends SuggestionWithTerm {
 }
 
 const AdminPanel: React.FC = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [pendingSuggestions, setPendingSuggestions] = useState<
     SuggestionWithTerm[]
   >([]);
@@ -411,7 +411,7 @@ const AdminPanel: React.FC = () => {
                         className="border-blue-200 text-blue-600 hover:bg-blue-50"
                       >
                         <Edit className="h-4 w-4 mr-1" />
-                        {t("edit")}
+                        {language === "ar" ? "تعديل" : t("edit")}
                       </Button>
                       <Badge
                         variant="secondary"
