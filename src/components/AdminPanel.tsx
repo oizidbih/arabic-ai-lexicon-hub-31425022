@@ -356,7 +356,9 @@ const AdminPanel: React.FC = () => {
           {t("adminPanel")}
         </h2>
         <p className="text-slate-600">
-          {language === "ar" ? "إدارة إدخالات القاموس واقتراحات المستخدمين" : "Manage dictionary entries and user suggestions"}
+          {language === "ar"
+            ? "إدارة إدخالات القاموس واقتراحات المستخدمين"
+            : "Manage dictionary entries and user suggestions"}
         </p>
       </div>
 
@@ -365,8 +367,13 @@ const AdminPanel: React.FC = () => {
           <TabsTrigger value="suggestions">
             {t("pendingSuggestions")} ({pendingSuggestions.length})
           </TabsTrigger>
-          <TabsTrigger value="edits" className="font-arabic">
-            تعديلات معلقة ({pendingEdits.length})
+          <TabsTrigger
+            value="edits"
+            className={language === "ar" ? "font-arabic" : ""}
+          >
+            {language === "en"
+              ? `Pending Edits (${pendingEdits.length})`
+              : `تعديلات معلقة (${pendingEdits.length})`}
           </TabsTrigger>
           <TabsTrigger value="terms">
             {t("viewAll")} ({allTerms.length})
@@ -448,7 +455,13 @@ const AdminPanel: React.FC = () => {
                     </div>
                   )}
 
-                  <div className={`flex ${language === 'ar' ? 'space-x-reverse space-x-3' : 'space-x-3'}`}>
+                  <div
+                    className={`flex ${
+                      language === "ar"
+                        ? "space-x-reverse space-x-3"
+                        : "space-x-3"
+                    }`}
+                  >
                     <Button
                       onClick={() => handleApproveSuggestion(suggestion)}
                       className="bg-green-600 hover:bg-green-700"
@@ -476,19 +489,29 @@ const AdminPanel: React.FC = () => {
         <TabsContent value="edits" className="space-y-4">
           {pendingEdits.length === 0 ? (
             <Card className="p-8 text-center bg-slate-50">
-              <p className="text-slate-600">لا توجد تعديلات معلقة</p>
+              <p className="text-slate-600">
+                {language === "en"
+                  ? "No pending edits"
+                  : "لا توجد تعديلات معلقة"}
+              </p>
             </Card>
           ) : (
             pendingEdits.map((edit) => (
               <Card key={edit.id} className="border-l-4 border-l-orange-500">
                 <CardHeader className="bg-orange-50">
                   <CardTitle className="flex items-center justify-between">
-                    <span>تعديل مقترح للمصطلح: {edit.term_id}</span>
+                    <span>
+                      {language === "en"
+                        ? `Suggested edit for term: ${edit.term_id}`
+                        : `تعديل مقترح للمصطلح: ${edit.term_id}`}
+                    </span>
                     <Badge
                       variant="secondary"
-                      className="bg-orange-100 text-orange-800 font-arabic"
+                      className={`bg-orange-100 text-orange-800 ${
+                        language === "ar" ? "font-arabic" : ""
+                      }`}
                     >
-                      معلق
+                      {language === "en" ? "Pending" : "معلق"}
                     </Badge>
                   </CardTitle>
                 </CardHeader>
@@ -497,31 +520,52 @@ const AdminPanel: React.FC = () => {
                   <div className="space-y-3 mb-4">
                     {edit.suggested_english_term && (
                       <div>
-                        <strong>المصطلح الإنجليزي المقترح:</strong>{" "}
+                        <strong>
+                          {language === "en"
+                            ? "Suggested English Term:"
+                            : "المصطلح الإنجليزي المقترح:"}
+                        </strong>{" "}
                         {edit.suggested_english_term}
                       </div>
                     )}
                     {edit.suggested_arabic_term && (
-                      <div className="text-right">
-                        <strong>الترجمة العربية المقترحة:</strong>{" "}
+                      <div className={language === "ar" ? "text-right" : ""}>
+                        <strong>
+                          {language === "en"
+                            ? "Suggested Arabic Translation:"
+                            : "الترجمة العربية المقترحة:"}
+                        </strong>{" "}
                         {edit.suggested_arabic_term}
                       </div>
                     )}
                     {edit.suggested_description_en && (
                       <div>
-                        <strong>التعريف الإنجليزي المقترح:</strong>{" "}
+                        <strong>
+                          {language === "en"
+                            ? "Suggested English Definition:"
+                            : "التعريف الإنجليزي المقترح:"}
+                        </strong>{" "}
                         {edit.suggested_description_en}
                       </div>
                     )}
                     {edit.suggested_description_ar && (
-                      <div className="text-right">
-                        <strong>التعريف العربي المقترح:</strong>{" "}
+                      <div className={language === "ar" ? "text-right" : ""}>
+                        <strong>
+                          {language === "en"
+                            ? "Suggested Arabic Definition:"
+                            : "التعريف العربي المقترح:"}
+                        </strong>{" "}
                         {edit.suggested_description_ar}
                       </div>
                     )}
                     {edit.change_reason && (
                       <div>
-                        <strong>سبب التعديل:</strong> {edit.change_reason}
+                        <strong>
+                          {language === "en"
+                            ? "Reason for Edit:"
+                            : "سبب التعديل:"}
+                        </strong>{" "}
+                        {edit.change_reason}
                       </div>
                     )}
                   </div>
@@ -531,19 +575,25 @@ const AdminPanel: React.FC = () => {
                       onClick={() => handleApproveEdit(edit)}
                       className="bg-green-600 hover:bg-green-700"
                     >
-                      <span className="font-arabic">قبول</span>
+                      <span className={language === "ar" ? "font-arabic" : ""}>
+                        {language === "en" ? "Approve" : "قبول"}
+                      </span>
                     </Button>
                     <Button
                       onClick={() => handleRejectEdit(edit.id)}
                       variant="destructive"
                     >
-                      <span className="font-arabic">رفض</span>
+                      <span className={language === "ar" ? "font-arabic" : ""}>
+                        {language === "en" ? "Reject" : "رفض"}
+                      </span>
                     </Button>
                   </div>
 
                   <p className="text-xs text-slate-400 mt-3">
-                    تاريخ الإرسال:{" "}
-                    {new Date(edit.created_at).toLocaleDateString()}
+                    {language === "en" ? "Submitted: " : "تاريخ الإرسال: "}{" "}
+                    {new Date(edit.created_at).toLocaleDateString(
+                      language === "en" ? "en-US" : "ar-SA"
+                    )}
                   </p>
                 </CardContent>
               </Card>
@@ -604,8 +654,12 @@ const AdminPanel: React.FC = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <CardHeader className="bg-gradient-to-r from-yellow-50 to-orange-50">
-              <CardTitle className="text-xl text-slate-800 font-arabic">
-                تعديل الاقتراح
+              <CardTitle
+                className={`text-xl text-slate-800 ${
+                  language === "ar" ? "font-arabic" : ""
+                }`}
+              >
+                {language === "en" ? "Edit Suggestion" : "تعديل الاقتراح"}
               </CardTitle>
             </CardHeader>
 
