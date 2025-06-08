@@ -464,7 +464,7 @@ const AdminPanel: React.FC = () => {
                   </div>
 
                   <p className="text-xs text-slate-400 mt-3">
-                    Submitted:{" "}
+                    {language === "ar" ? "تاريخ الإرسال: " : "Submitted: "}
                     {new Date(suggestion.created_at).toLocaleDateString()}
                   </p>
                 </CardContent>
