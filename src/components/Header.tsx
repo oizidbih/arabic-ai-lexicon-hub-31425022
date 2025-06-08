@@ -1,7 +1,7 @@
 import React from "react";
 import { Search, User, LogOut, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@/contexts/useLanguage";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 

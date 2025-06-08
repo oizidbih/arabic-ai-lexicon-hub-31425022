@@ -3,7 +3,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@/contexts/useLanguage";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase, type Term } from "@/lib/supabase";
 import { toast } from "@/hooks/use-toast";
@@ -60,7 +60,16 @@ const EditTermForm: React.FC<EditTermFormProps> = ({
 
     setIsSubmitting(true);
     try {
-      const suggestionData: any = {
+      const suggestionData: {
+        term_id: string;
+        user_id: string;
+        change_reason: string;
+        status: string;
+        suggested_english_term?: string;
+        suggested_arabic_term?: string;
+        suggested_description_en?: string;
+        suggested_description_ar?: string;
+      } = {
         term_id: term.id,
         user_id: user.id,
         change_reason: formData.change_reason,
@@ -114,7 +123,7 @@ const EditTermForm: React.FC<EditTermFormProps> = ({
               language === "ar" ? "text-right" : ""
             }`}
           >
-            {t("Edit Term")}
+            {t("editTerm")}
           </CardTitle>
         </CardHeader>
 
@@ -126,7 +135,7 @@ const EditTermForm: React.FC<EditTermFormProps> = ({
                   language === "ar" ? "text-right" : ""
                 }`}
               >
-                {t("English Term")} *
+                {t("englishTerm")} *
               </label>
               <Input
                 value={formData.english_term}
@@ -143,7 +152,7 @@ const EditTermForm: React.FC<EditTermFormProps> = ({
                   language === "ar" ? "text-right" : ""
                 }`}
               >
-                {t("Arabic Translation")} *
+                {t("arabicTranslation")} *
               </label>
               <Input
                 value={formData.arabic_term}
@@ -162,7 +171,7 @@ const EditTermForm: React.FC<EditTermFormProps> = ({
                   language === "ar" ? "text-right" : ""
                 }`}
               >
-                {t("English Definition")}
+                {t("englishDefinition")}
               </label>
               <Textarea
                 value={formData.description_en}
@@ -179,7 +188,7 @@ const EditTermForm: React.FC<EditTermFormProps> = ({
                   language === "ar" ? "text-right" : ""
                 }`}
               >
-                {t("Arabic Definition")}
+                {t("arabicDefinition")}
               </label>
               <Textarea
                 value={formData.description_ar}
@@ -198,14 +207,14 @@ const EditTermForm: React.FC<EditTermFormProps> = ({
                   language === "ar" ? "text-right" : ""
                 }`}
               >
-                {t("Edit Reason")}
+                {t("editReason")}
               </label>
               <Textarea
                 value={formData.change_reason}
                 onChange={(e) =>
                   setFormData({ ...formData, change_reason: e.target.value })
                 }
-                placeholder={t("Explain edit reason")}
+                placeholder={t("explainEditReason")}
                 className={language === "ar" ? "text-right font-arabic" : ""}
                 dir={language === "ar" ? "rtl" : "ltr"}
                 rows={2}
@@ -224,14 +233,14 @@ const EditTermForm: React.FC<EditTermFormProps> = ({
                 disabled={isSubmitting}
                 className={language === "ar" ? "ml-3" : "mr-3"}
               >
-                {t("Cancel")}
+                {t("cancel")}
               </Button>
               <Button
                 type="submit"
                 disabled={isSubmitting}
                 className="bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-600 hover:to-teal-600"
               >
-                {isSubmitting ? t("Loading") : t("Submit")}
+                {isSubmitting ? t("loading") : t("submit")}
               </Button>
             </div>
           </form>

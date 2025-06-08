@@ -1,12 +1,10 @@
-
-
 import React, { useState, useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/AuthContext";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@/contexts/useLanguage";
 import { toast } from "@/hooks/use-toast";
 import { Navigate } from "react-router-dom";
 import { LogIn, UserPlus, ArrowLeft } from "lucide-react";
@@ -93,7 +91,9 @@ const Auth = () => {
         <Card className="shadow-xl border-blue-200">
           <CardHeader className="space-y-4 text-center">
             <div className="space-y-2 flex flex-col items-center justify-center">
-              <CardTitle className={`text-2xl ${language === "ar" ? "font-arabic" : ""}`}>
+              <CardTitle
+                className={`text-2xl ${language === "ar" ? "font-arabic" : ""}`}
+              >
                 {isLogin
                   ? language === "en"
                     ? "Sign In"
@@ -102,7 +102,11 @@ const Auth = () => {
                   ? "Create Account"
                   : "إنشاء حساب"}
               </CardTitle>
-              <p className={`text-slate-600 ${language === "ar" ? "font-arabic" : ""}`}>
+              <p
+                className={`text-slate-600 ${
+                  language === "ar" ? "font-arabic" : ""
+                }`}
+              >
                 {isLogin
                   ? language === "en"
                     ? "Enter your credentials to access the admin panel"
@@ -227,4 +231,3 @@ const Auth = () => {
 };
 
 export default Auth;
-

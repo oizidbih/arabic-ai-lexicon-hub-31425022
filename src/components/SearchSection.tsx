@@ -1,10 +1,9 @@
-
 import React, { useState } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@/contexts/useLanguage";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase, type Term } from "@/lib/supabase";
 
@@ -109,11 +108,7 @@ const SearchSection: React.FC<SearchSectionProps> = ({ onResults }) => {
               isArabic ? "left-2" : "right-2"
             }`}
           >
-            {isLoading 
-              ? t("loading") 
-              : language === "en" 
-                ? "Search" 
-                : "بحث"}
+            {isLoading ? t("loading") : language === "en" ? "Search" : "بحث"}
           </Button>
         </div>
       </div>

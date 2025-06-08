@@ -3,7 +3,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@/contexts/useLanguage";
 import { supabase } from "@/lib/supabase";
 import { toast } from "@/hooks/use-toast";
 
@@ -65,12 +65,13 @@ const SuggestionForm: React.FC<SuggestionFormProps> = ({ onClose }) => {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <CardHeader className="bg-gradient-to-r from-teal-50 to-blue-50">
+          {" "}
           <CardTitle
             className={`text-xl text-slate-800 ${
               language === "ar" ? "text-right" : ""
             }`}
           >
-            {t("Suggest Translation")}
+            {t("suggestTranslation")}
           </CardTitle>
         </CardHeader>
 
@@ -82,7 +83,7 @@ const SuggestionForm: React.FC<SuggestionFormProps> = ({ onClose }) => {
                   language === "ar" ? "text-right" : ""
                 }`}
               >
-                {t("English Term")} *
+                {t("englishTerm")} *
               </label>
               <Input
                 value={formData.english_term}
@@ -100,7 +101,7 @@ const SuggestionForm: React.FC<SuggestionFormProps> = ({ onClose }) => {
                   language === "ar" ? "text-right" : ""
                 }`}
               >
-                {t("Arabic Translation")} *
+                {t("arabicTranslation")} *
               </label>
               <Input
                 value={formData.suggested_arabic}
@@ -120,7 +121,7 @@ const SuggestionForm: React.FC<SuggestionFormProps> = ({ onClose }) => {
                   language === "ar" ? "text-right" : ""
                 }`}
               >
-                {t("Category")}
+                {t("category")}
               </label>
               <Input
                 value={formData.category}
@@ -139,7 +140,7 @@ const SuggestionForm: React.FC<SuggestionFormProps> = ({ onClose }) => {
                   language === "ar" ? "text-right" : ""
                 }`}
               >
-                {t("English Definition")}
+                {t("englishDefinition")}
               </label>
               <Textarea
                 value={formData.definition_english}
@@ -149,7 +150,7 @@ const SuggestionForm: React.FC<SuggestionFormProps> = ({ onClose }) => {
                     definition_english: e.target.value,
                   })
                 }
-                placeholder={t("Optional English Definition")}
+                placeholder={t("optionalEnglishDefinition")}
                 rows={3}
               />
             </div>
@@ -160,7 +161,7 @@ const SuggestionForm: React.FC<SuggestionFormProps> = ({ onClose }) => {
                   language === "ar" ? "text-right" : ""
                 }`}
               >
-                {t("Arabic Definition")}
+                {t("arabicDefinition")}
               </label>
               <Textarea
                 value={formData.definition_arabic}
@@ -170,7 +171,7 @@ const SuggestionForm: React.FC<SuggestionFormProps> = ({ onClose }) => {
                     definition_arabic: e.target.value,
                   })
                 }
-                placeholder={t("Optional Arabic Definition")}
+                placeholder={t("optionalArabicDefinition")}
                 className="text-right font-arabic"
                 dir="rtl"
                 rows={3}
