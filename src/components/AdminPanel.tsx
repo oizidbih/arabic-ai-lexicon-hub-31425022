@@ -417,7 +417,7 @@ const AdminPanel: React.FC = () => {
                         variant="secondary"
                         className="bg-yellow-100 text-yellow-800"
                       >
-                        Pending
+                        {language === "ar" ? "معلق" : "Pending"}
                       </Badge>
                     </div>
                   </CardTitle>
