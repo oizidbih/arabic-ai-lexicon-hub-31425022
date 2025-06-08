@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -108,7 +109,11 @@ const SearchSection: React.FC<SearchSectionProps> = ({ onResults }) => {
               isArabic ? "left-2" : "right-2"
             }`}
           >
-            {isLoading ? t("loading") : t("searchInEnglish")}
+            {isLoading 
+              ? t("loading") 
+              : language === "en" 
+                ? "Search" 
+                : "بحث"}
           </Button>
         </div>
       </div>
