@@ -448,7 +448,7 @@ const AdminPanel: React.FC = () => {
                     </div>
                   )}
 
-                  <div className="flex space-x-3">
+                  <div className={`flex ${language === 'ar' ? 'space-x-reverse space-x-3' : 'space-x-3'}`}>
                     <Button
                       onClick={() => handleApproveSuggestion(suggestion)}
                       className="bg-green-600 hover:bg-green-700"
