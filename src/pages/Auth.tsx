@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -91,7 +92,7 @@ const Auth = () => {
 
         <Card className="shadow-xl border-blue-200">
           <CardHeader className="space-y-4 text-center">
-            <div className="space-y-2">
+            <div className="space-y-2 flex flex-col items-center justify-center">
               <CardTitle className={`text-2xl ${language === "ar" ? "font-arabic" : ""}`}>
                 {isLogin
                   ? language === "en"
@@ -226,3 +227,4 @@ const Auth = () => {
 };
 
 export default Auth;
+
