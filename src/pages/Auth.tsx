@@ -76,7 +76,7 @@ const Auth = () => {
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             {language === "en" ? "Back" : "رجوع"}
-          </Button>{" "}
+          </Button>
           <h1
             className={`text-3xl font-bold bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text text-transparent ${
               language === "ar" ? "font-arabic" : ""
@@ -90,7 +90,7 @@ const Auth = () => {
 
         <Card className="shadow-xl border-blue-200">
           <CardHeader className="space-y-1 text-center">
-            <CardTitle className="text-2xl">
+            <CardTitle className={`text-2xl ${language === "ar" ? "font-arabic" : ""}`}>
               {isLogin
                 ? language === "en"
                   ? "Sign In"
@@ -99,7 +99,7 @@ const Auth = () => {
                 ? "Create Account"
                 : "إنشاء حساب"}
             </CardTitle>
-            <p className="text-slate-600">
+            <p className={`text-slate-600 ${language === "ar" ? "font-arabic" : ""}`}>
               {isLogin
                 ? language === "en"
                   ? "Enter your credentials to access the admin panel"
