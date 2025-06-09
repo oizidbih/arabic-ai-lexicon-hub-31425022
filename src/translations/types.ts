@@ -6,10 +6,20 @@ export interface TranslationKeys {
   loading: string;
   submit: string;
   cancel: string;
+  approve: string;
+  reject: string;
+  add: string;
+  edit: string;
+  delete: string;
+  save: string;
+  view: string;
+  pending: string;
+  approved: string;
 
   // Form titles
   editTerm: string;
   suggestTranslation: string;
+  editSuggestion: string;
 
   // Field labels
   englishTerm: string;
@@ -32,9 +42,23 @@ export interface TranslationKeys {
   editSuggestionSubmitted: string;
   failedToSubmit: string;
   errorSubmittingEdit: string;
+  suggestionApproved: string;
+  suggestionRejected: string;
+  suggestionApproveFailed: string;
+  suggestionRejectFailed: string;
+  editApproved: string;
+  editApproveFailed: string;
+  editRejected: string;
+  editRejectFailed: string;
+  editSaved: string;
+  editSaveFailed: string;
+  confirmApproveAll: string;
+  approveAllSuccess: string;
+  approveAllError: string;
 
   // Buttons
   submitEdit: string;
+  saveEdits: string;
 
   // App specific
   appTitle: string;
@@ -49,13 +73,13 @@ export interface TranslationKeys {
   definition: string;
   adminPanel: string;
   pendingSuggestions: string;
-  approve: string;
-  reject: string;
   viewAll: string;
   addNew: string;
   feedback: string;
   status: string;
   actions: string;
+  allTerms: string;
+  pendingEdits: string;
 
   // Auth specific
   signIn: string;
@@ -71,6 +95,24 @@ export interface TranslationKeys {
   enterPassword: string;
   signOut: string;
   search: string;
+
+  // Admin Panel Specific
+  approveAll: string;
+  approving: string;
+  allSuggestionsApproved: string;
+  failedToApproveAll: string;
+  adminPanelDescription: string;
+  noPendingSuggestions: string;
+  noPendingEdits: string;
+  noPendingTerms: string;
+  reason: string;
+  submitted: string;
+  suggestedEditForTerm: string;
+  suggestedEnglishTerm: string;
+  suggestedArabicTranslation: string;
+  suggestedEnglishDefinition: string;
+  suggestedArabicDefinition: string;
+  reasonForEdit: string;
 }
 
 export interface Translations {

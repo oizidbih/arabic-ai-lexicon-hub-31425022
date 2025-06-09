@@ -36,7 +36,9 @@ const AdminPanel: React.FC = () => {
   >([]);
   const [pendingEdits, setPendingEdits] = useState<EditSuggestion[]>([]);
   const [allTerms, setAllTerms] = useState<Term[]>([]);
+  const [totalTermsCount, setTotalTermsCount] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [isApprovingAll, setIsApprovingAll] = useState(false);
   const [editingSuggestion, setEditingSuggestion] =
     useState<EditingSuggestion | null>(null);
   const [editForm, setEditForm] = useState({
@@ -121,14 +123,16 @@ const AdminPanel: React.FC = () => {
 
   const loadAllTerms = async () => {
     try {
-      const { data, error } = await supabase
+      const { data, count, error } = await supabase
         .from("terms")
-        .select("*")
+        .select("*", { count: "exact" })
         .eq("status", "approved")
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
+        .limit(1000); // Limit to 1000 items for display
 
       if (error) throw error;
       setAllTerms(data || []);
+      setTotalTermsCount(count || 0);
     } catch (error) {
       console.error("Error loading terms:", error);
     }
@@ -157,7 +161,7 @@ const AdminPanel: React.FC = () => {
 
       toast({
         title: t("success"),
-        description: "Suggestion approved and term updated",
+        description: t("suggestionApproved"),
       });
 
       loadPendingSuggestions();
@@ -166,7 +170,7 @@ const AdminPanel: React.FC = () => {
       console.error("Error approving suggestion:", error);
       toast({
         title: t("error"),
-        description: "Failed to approve suggestion",
+        description: t("suggestionApproveFailed"),
         variant: "destructive",
       });
     }
@@ -207,7 +211,7 @@ const AdminPanel: React.FC = () => {
 
       toast({
         title: t("success"),
-        description: "تم قبول التعديل وتحديث المصطلح",
+        description: t("editApproved"),
       });
 
       loadPendingEdits();
@@ -216,7 +220,7 @@ const AdminPanel: React.FC = () => {
       console.error("Error approving edit:", error);
       toast({
         title: t("error"),
-        description: "فشل في قبول التعديل",
+        description: t("editApproveFailed"),
         variant: "destructive",
       });
     }
@@ -233,7 +237,7 @@ const AdminPanel: React.FC = () => {
 
       toast({
         title: t("success"),
-        description: "Suggestion rejected",
+        description: t("suggestionRejected"),
       });
 
       loadPendingSuggestions();
@@ -241,7 +245,7 @@ const AdminPanel: React.FC = () => {
       console.error("Error rejecting suggestion:", error);
       toast({
         title: t("error"),
-        description: "Failed to reject suggestion",
+        description: t("suggestionRejectFailed"),
         variant: "destructive",
       });
     }
@@ -258,7 +262,7 @@ const AdminPanel: React.FC = () => {
 
       toast({
         title: t("success"),
-        description: "تم رفض التعديل",
+        description: t("editRejected"),
       });
 
       loadPendingEdits();
@@ -266,7 +270,7 @@ const AdminPanel: React.FC = () => {
       console.error("Error rejecting edit:", error);
       toast({
         title: t("error"),
-        description: "فشل في رفض التعديل",
+        description: t("editRejectFailed"),
         variant: "destructive",
       });
     }
@@ -334,7 +338,7 @@ const AdminPanel: React.FC = () => {
 
       toast({
         title: t("success"),
-        description: "تم حفظ التعديلات بنجاح",
+        description: t("editSaved"),
       });
 
       loadPendingSuggestions();
@@ -343,9 +347,59 @@ const AdminPanel: React.FC = () => {
       console.error("Error saving edits:", error);
       toast({
         title: t("error"),
-        description: "فشل في حفظ التعديلات",
+        description: t("editSaveFailed"),
         variant: "destructive",
       });
+    }
+  };
+
+  const handleApproveAllSuggestions = async () => {
+    if (!pendingSuggestions.length) return;
+    
+    setIsApprovingAll(true);
+    try {
+      // Process all suggestions in parallel
+      await Promise.all(
+        pendingSuggestions.map(async (suggestion) => {
+          if (suggestion.term_id) {
+            // Update the existing term with the suggested Arabic translation
+            const { error: updateError } = await supabase
+              .from("terms")
+              .update({
+                arabic_term: suggestion.suggested_arabic_term,
+                status: "approved",
+              })
+              .eq("id", suggestion.term_id);
+
+            if (updateError) throw updateError;
+
+            // Update suggestion status
+            const { error: suggestionError } = await supabase
+              .from("suggestions")
+              .update({ status: "approved" })
+              .eq("id", suggestion.id);
+
+            if (suggestionError) throw suggestionError;
+          }
+        })
+      );
+
+      toast({
+        title: t("success"),
+        description: t("allSuggestionsApproved"),
+      });
+
+      loadPendingSuggestions();
+      loadAllTerms();
+    } catch (error) {
+      console.error("Error approving all suggestions:", error);
+      toast({
+        title: t("error"),
+        description: t("failedToApproveAll"),
+        variant: "destructive",
+      });
+    } finally {
+      setIsApprovingAll(false);
     }
   };
 
@@ -356,9 +410,7 @@ const AdminPanel: React.FC = () => {
           {t("adminPanel")}
         </h2>
         <p className="text-slate-600">
-          {language === "ar"
-            ? "إدارة إدخالات القاموس واقتراحات المستخدمين"
-            : "Manage dictionary entries and user suggestions"}
+          {t("adminPanelDescription")}
         </p>
       </div>
 
@@ -367,127 +419,136 @@ const AdminPanel: React.FC = () => {
           <TabsTrigger value="suggestions">
             {t("pendingSuggestions")} ({pendingSuggestions.length})
           </TabsTrigger>
-          <TabsTrigger
-            value="edits"
-            className={language === "ar" ? "font-arabic" : ""}
-          >
-            {language === "en"
-              ? `Pending Edits (${pendingEdits.length})`
-              : `تعديلات معلقة (${pendingEdits.length})`}
-          </TabsTrigger>
+          <TabsTrigger value="edits">{t("pendingEdits")} ({pendingEdits.length})</TabsTrigger>
           <TabsTrigger value="terms">
-            {t("viewAll")} ({allTerms.length})
+            {t("allTerms")}{totalTermsCount > 0 ? ` (${totalTermsCount})` : ""}
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="suggestions" className="space-y-4">
-          {isLoading ? (
-            <p className="text-center text-slate-500">{t("loading")}</p>
-          ) : pendingSuggestions.length === 0 ? (
-            <Card className="p-8 text-center bg-slate-50">
-              <p className="text-slate-600">No pending suggestions</p>
-            </Card>
-          ) : (
-            pendingSuggestions.map((suggestion) => (
-              <Card
-                key={suggestion.id}
-                className="border-l-4 border-l-yellow-500"
-              >
-                <CardHeader className="bg-yellow-50">
-                  <CardTitle className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                      <span>
-                        {suggestion.terms?.english_term ||
-                          suggestion.english_term}
-                      </span>
-                      <span className="text-slate-400">→</span>
-                      <span className="text-right font-arabic">
-                        {suggestion.suggested_arabic_term}
-                      </span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() =>
-                          handleEditSuggestion(
-                            suggestion,
-                            !!suggestion.english_term
-                          )
-                        }
-                        className="border-blue-200 text-blue-600 hover:bg-blue-50"
-                      >
-                        <Edit className="h-4 w-4 mr-1" />
-                        {language === "ar" ? "تعديل" : t("edit")}
-                      </Button>
-                      <Badge
-                        variant="secondary"
-                        className="bg-yellow-100 text-yellow-800"
-                      >
-                        {language === "ar" ? "معلق" : "Pending"}
-                      </Badge>
-                    </div>
-                  </CardTitle>
-                </CardHeader>
+        <TabsContent value="suggestions">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle>{t("pendingSuggestions")}</CardTitle>
+                {pendingSuggestions.length > 0 && (
+                  <Button
+                    onClick={handleApproveAllSuggestions}
+                    disabled={isApprovingAll}
+                    className="bg-green-600 hover:bg-green-700"
+                  >
+                    {isApprovingAll ? t("approving") : t("approveAll")}
+                  </Button>
+                )}
+              </div>
+            </CardHeader>
+            <CardContent>
+              {isLoading ? (
+                <p className="text-center text-slate-500">{t("loading")}</p>
+              ) : pendingSuggestions.length === 0 ? (
+                <Card className="p-8 text-center bg-slate-50">
+                  <p className="text-slate-600">{t("noPendingSuggestions")}</p>
+                </Card>
+              ) : (
+                pendingSuggestions.map((suggestion) => (
+                  <Card
+                    key={suggestion.id}
+                    className="border-l-4 border-l-yellow-500"
+                  >
+                    <CardHeader className="bg-yellow-50">
+                      <CardTitle className="flex items-center justify-between">
+                        <div className="flex items-center space-x-4">
+                          <span>
+                            {suggestion.terms?.english_term ||
+                              suggestion.english_term}
+                          </span>
+                          <span className="text-slate-400">→</span>
+                          <span className="text-right font-arabic">
+                            {suggestion.suggested_arabic_term}
+                          </span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() =>
+                              handleEditSuggestion(
+                                suggestion,
+                                !!suggestion.english_term
+                              )
+                            }
+                            className="border-blue-200 text-blue-600 hover:bg-blue-50"
+                          >
+                            <Edit className="h-4 w-4 mr-1" />
+                            {t("edit")}
+                          </Button>
+                          <Badge
+                            variant="secondary"
+                            className="bg-yellow-100 text-yellow-800"
+                          >
+                            {t("pending")}
+                          </Badge>
+                        </div>
+                      </CardTitle>
+                    </CardHeader>
 
-                <CardContent className="p-6">
-                  {(suggestion.description_en || suggestion.description_ar) && (
-                    <div className="mb-4">
-                      {suggestion.description_en && (
-                        <p className="text-slate-600 mb-2">
-                          <strong>English Definition:</strong>{" "}
-                          {suggestion.description_en}
-                        </p>
+                    <CardContent className="p-6">
+                      {(suggestion.description_en || suggestion.description_ar) && (
+                        <div className="mb-4">
+                          {suggestion.description_en && (
+                            <p className="text-slate-600 mb-2">
+                              <strong>{t("englishDefinition")}:</strong>{" "}
+                              {suggestion.description_en}
+                            </p>
+                          )}
+                          {suggestion.description_ar && (
+                            <p className="text-slate-600 text-right">
+                              <strong>{t("arabicDefinition")}:</strong>{" "}
+                              {suggestion.description_ar}
+                            </p>
+                          )}
+                        </div>
                       )}
-                      {suggestion.description_ar && (
-                        <p className="text-slate-600 text-right">
-                          <strong>التعريف بالعربية:</strong>{" "}
-                          {suggestion.description_ar}
-                        </p>
+                      {suggestion.reason && (
+                        <div className="mb-4">
+                          <p className="text-slate-600">
+                            <strong>{t("reason")}:</strong> {suggestion.reason}
+                          </p>
+                        </div>
                       )}
-                    </div>
-                  )}
-                  {suggestion.reason && (
-                    <div className="mb-4">
-                      <p className="text-slate-600">
-                        <strong>Reason:</strong> {suggestion.reason}
+
+                      <div className="flex">
+                        <Button
+                          className="mx-2 bg-green-600 hover:bg-green-700"
+                          onClick={() => handleApproveSuggestion(suggestion)}
+                        >
+                          {t("approve")}
+                        </Button>
+                        <Button
+                          className="mx-2"
+                          onClick={() => handleRejectSuggestion(suggestion.id)}
+                          variant="destructive"
+                        >
+                          {t("reject")}
+                        </Button>
+                      </div>
+
+                      <p className="text-xs text-slate-400 mt-3">
+                        {t("submitted")}
+                        {new Date(suggestion.created_at).toLocaleDateString()}
                       </p>
-                    </div>
-                  )}
-
-                  <div className="flex">
-                    <Button
-                      className="mx-2 bg-green-600 hover:bg-green-700"
-                      onClick={() => handleApproveSuggestion(suggestion)}
-                    >
-                      {t("approve")}
-                    </Button>
-                    <Button
-                      className="mx-2"
-                      onClick={() => handleRejectSuggestion(suggestion.id)}
-                      variant="destructive"
-                    >
-                      {t("reject")}
-                    </Button>
-                  </div>
-
-                  <p className="text-xs text-slate-400 mt-3">
-                    {language === "ar" ? "تاريخ الإرسال: " : "Submitted: "}
-                    {new Date(suggestion.created_at).toLocaleDateString()}
-                  </p>
-                </CardContent>
-              </Card>
-            ))
-          )}
+                    </CardContent>
+                  </Card>
+                ))
+              )}
+            </CardContent>
+          </Card>
         </TabsContent>
 
         <TabsContent value="edits" className="space-y-4">
           {pendingEdits.length === 0 ? (
             <Card className="p-8 text-center bg-slate-50">
               <p className="text-slate-600">
-                {language === "en"
-                  ? "No pending edits"
-                  : "لا توجد تعديلات معلقة"}
+                {t("noPendingEdits")}
               </p>
             </Card>
           ) : (
@@ -496,9 +557,7 @@ const AdminPanel: React.FC = () => {
                 <CardHeader className="bg-orange-50">
                   <CardTitle className="flex items-center justify-between">
                     <span>
-                      {language === "en"
-                        ? `Suggested edit for term: ${edit.term_id}`
-                        : `تعديل مقترح للمصطلح: ${edit.term_id}`}
+                      {t("suggestedEditForTerm")} {edit.term_id}
                     </span>
                     <Badge
                       variant="secondary"
@@ -506,7 +565,7 @@ const AdminPanel: React.FC = () => {
                         language === "ar" ? "font-arabic" : ""
                       }`}
                     >
-                      {language === "en" ? "Pending" : "معلق"}
+                      {t("pending")}
                     </Badge>
                   </CardTitle>
                 </CardHeader>
@@ -516,9 +575,7 @@ const AdminPanel: React.FC = () => {
                     {edit.suggested_english_term && (
                       <div>
                         <strong>
-                          {language === "en"
-                            ? "Suggested English Term:"
-                            : "المصطلح الإنجليزي المقترح:"}
+                          {t("suggestedEnglishTerm")}
                         </strong>{" "}
                         {edit.suggested_english_term}
                       </div>
@@ -526,9 +583,7 @@ const AdminPanel: React.FC = () => {
                     {edit.suggested_arabic_term && (
                       <div className={language === "ar" ? "text-right" : ""}>
                         <strong>
-                          {language === "en"
-                            ? "Suggested Arabic Translation:"
-                            : "الترجمة العربية المقترحة:"}
+                          {t("suggestedArabicTranslation")}
                         </strong>{" "}
                         {edit.suggested_arabic_term}
                       </div>
@@ -536,9 +591,7 @@ const AdminPanel: React.FC = () => {
                     {edit.suggested_description_en && (
                       <div>
                         <strong>
-                          {language === "en"
-                            ? "Suggested English Definition:"
-                            : "التعريف الإنجليزي المقترح:"}
+                          {t("suggestedEnglishDefinition")}
                         </strong>{" "}
                         {edit.suggested_description_en}
                       </div>
@@ -546,9 +599,7 @@ const AdminPanel: React.FC = () => {
                     {edit.suggested_description_ar && (
                       <div className={language === "ar" ? "text-right" : ""}>
                         <strong>
-                          {language === "en"
-                            ? "Suggested Arabic Definition:"
-                            : "التعريف العربي المقترح:"}
+                          {t("suggestedArabicDefinition")}
                         </strong>{" "}
                         {edit.suggested_description_ar}
                       </div>
@@ -556,9 +607,7 @@ const AdminPanel: React.FC = () => {
                     {edit.change_reason && (
                       <div>
                         <strong>
-                          {language === "en"
-                            ? "Reason for Edit:"
-                            : "سبب التعديل:"}
+                          {t("reasonForEdit")}
                         </strong>{" "}
                         {edit.change_reason}
                       </div>
@@ -571,7 +620,7 @@ const AdminPanel: React.FC = () => {
                       onClick={() => handleApproveEdit(edit)}
                     >
                       <span className={language === "ar" ? "font-arabic" : ""}>
-                        {language === "en" ? "Approve" : "قبول"}
+                        {t("approve")}
                       </span>
                     </Button>
                     <Button
@@ -580,13 +629,13 @@ const AdminPanel: React.FC = () => {
                       variant="destructive"
                     >
                       <span className={language === "ar" ? "font-arabic" : ""}>
-                        {language === "en" ? "Reject" : "رفض"}
+                        {t("reject")}
                       </span>
                     </Button>
                   </div>
 
                   <p className="text-xs text-slate-400 mt-3">
-                    {language === "en" ? "Submitted: " : "تاريخ الإرسال: "}{" "}
+                    {t("submitted")}{" "}
                     {new Date(edit.created_at).toLocaleDateString(
                       language === "en" ? "en-US" : "ar-SA"
                     )}
@@ -614,7 +663,7 @@ const AdminPanel: React.FC = () => {
                       variant="default"
                       className="bg-green-100 text-green-800"
                     >
-                      approved
+                      {t("approved")}
                     </Badge>
                   </CardTitle>
                 </CardHeader>
@@ -622,7 +671,7 @@ const AdminPanel: React.FC = () => {
                 <CardContent className="p-4">
                   {term.category && (
                     <Badge variant="outline" className="mb-2">
-                      {term.category}
+                      {t("category")}
                     </Badge>
                   )}
 
@@ -655,7 +704,7 @@ const AdminPanel: React.FC = () => {
                   language === "ar" ? "font-arabic" : ""
                 }`}
               >
-                {language === "en" ? "Edit Suggestion" : "تعديل الاقتراح"}
+                {t("editSuggestion")}
               </CardTitle>
             </CardHeader>
 
@@ -669,7 +718,7 @@ const AdminPanel: React.FC = () => {
               >
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-2">
-                    English Term *
+                    {t("englishTerm")} *
                   </label>
                   <Input
                     value={editForm.english_term}
@@ -682,7 +731,7 @@ const AdminPanel: React.FC = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-2">
-                    Arabic Translation *
+                    {t("arabicTranslation")} *
                   </label>
                   <Input
                     value={editForm.suggested_arabic_term}
@@ -701,7 +750,7 @@ const AdminPanel: React.FC = () => {
                   <>
                     <div>
                       <label className="block text-sm font-medium text-slate-700 mb-2">
-                        English Definition
+                        {t("englishDefinition")}
                       </label>
                       <Textarea
                         value={editForm.description_en}
@@ -717,7 +766,7 @@ const AdminPanel: React.FC = () => {
 
                     <div>
                       <label className="block text-sm font-medium text-slate-700 mb-2">
-                        Arabic Definition
+                        {t("arabicDefinition")}
                       </label>
                       <Textarea
                         value={editForm.description_ar}
@@ -746,7 +795,7 @@ const AdminPanel: React.FC = () => {
                     type="submit"
                     className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600"
                   >
-                    <span className="font-arabic">حفظ التعديلات</span>
+                    {t("saveEdits")}
                   </Button>
                 </div>
               </form>
