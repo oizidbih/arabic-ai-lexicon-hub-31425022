@@ -84,20 +84,18 @@ const Auth = () => {
         </div>
 
         <Card className="shadow-xl border-blue-200">
-          <CardHeader className="space-y-4 text-center">
-            <div className="space-y-2 flex flex-col items-center justify-center">
+          <CardHeader className="space-y-6 text-center">
+            <div className={`flex flex-col items-center justify-center ${language === "ar" ? "items-end text-right" : "items-center text-center"} space-y-2`}>
               <CardTitle
-                className={`text-2xl ${language === "ar" ? "font-arabic" : ""}`}
+                className={`text-2xl font-bold leading-tight ${language === "ar" ? "font-arabic" : ""}`}
               >
                 {isLogin ? t.signIn : t.createAccount}
               </CardTitle>
-              <p
-                className={`text-slate-600 ${
-                  language === "ar" ? "font-arabic" : ""
-                }`}
+              <span
+                className={`text-slate-600 leading-relaxed text-base ${language === "ar" ? "font-arabic" : ""}`}
               >
                 {isLogin ? t.mustBeLoggedInToEdit : t.dontHaveAccount}
-              </p>
+              </span>
             </div>
           </CardHeader>
 

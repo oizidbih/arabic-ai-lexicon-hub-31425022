@@ -37,8 +37,8 @@ const Header: React.FC<HeaderProps> = ({ onAdminClick, isAdminMode }) => {
     <header className="bg-gradient-to-r from-slate-900 via-blue-900 to-slate-900 text-white shadow-2xl">
       <div className="container mx-auto px-4 py-6">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <div className="bg-gradient-to-r from-blue-400 to-teal-400 p-3 rounded-xl">
+          <div className="flex items-center">
+            <div className={`bg-gradient-to-r from-blue-400 to-teal-400 p-3 rounded-xl ${language === "ar" ? "ml-4" : "mr-4"}`}>
               <Search className="h-8 w-8 text-white" />
             </div>
             <div>
@@ -59,7 +59,7 @@ const Header: React.FC<HeaderProps> = ({ onAdminClick, isAdminMode }) => {
             </div>
           </div>
 
-          <div className="flex items-center space-x-4">
+          <div className={`flex items-center space-x-4${language === "ar" ? " space-x-reverse" : ""}`}>
             <Button
               onClick={toggleLanguage}
               variant="outline"

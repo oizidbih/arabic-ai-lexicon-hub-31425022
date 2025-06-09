@@ -120,7 +120,7 @@
     text-align: right;
   }
 
-  [dir="rtl"] .flex {
+  [dir="rtl"] .flex-row {
     flex-direction: row-reverse;
   }
 

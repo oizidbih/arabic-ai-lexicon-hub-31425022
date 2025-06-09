@@ -455,20 +455,15 @@ const AdminPanel: React.FC = () => {
                     </div>
                   )}
 
-                  <div
-                    className={`flex ${
-                      language === "ar"
-                        ? "space-x-reverse space-x-3"
-                        : "space-x-3"
-                    }`}
-                  >
+                  <div className="flex">
                     <Button
+                      className="mx-2 bg-green-600 hover:bg-green-700"
                       onClick={() => handleApproveSuggestion(suggestion)}
-                      className="bg-green-600 hover:bg-green-700"
                     >
                       {t("approve")}
                     </Button>
                     <Button
+                      className="mx-2"
                       onClick={() => handleRejectSuggestion(suggestion.id)}
                       variant="destructive"
                     >
@@ -570,16 +565,17 @@ const AdminPanel: React.FC = () => {
                     )}
                   </div>
 
-                  <div className="flex space-x-3">
+                  <div className="flex justify-end">
                     <Button
+                      className="mx-2 bg-green-600 hover:bg-green-700"
                       onClick={() => handleApproveEdit(edit)}
-                      className="bg-green-600 hover:bg-green-700"
                     >
                       <span className={language === "ar" ? "font-arabic" : ""}>
                         {language === "en" ? "Approve" : "قبول"}
                       </span>
                     </Button>
                     <Button
+                      className="mx-2"
                       onClick={() => handleRejectEdit(edit.id)}
                       variant="destructive"
                     >
