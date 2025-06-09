@@ -90,6 +90,7 @@ export const englishTranslations: TranslationKeys = {
   suggestedEnglishDefinition: "Suggested English Definition:",
   suggestedArabicDefinition: "Suggested Arabic Definition:",
   reasonForEdit: "Reason for Edit:",
+  pendingEdits: "Pending Edits",
 
   // Common actions (moved to a more logical place)
   approve: "Approve",

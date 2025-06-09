@@ -11,7 +11,6 @@ import {
   supabase,
   type Suggestion,
   type Term,
-  type EditSuggestion,
 } from "@/lib/supabase";
 import { toast } from "@/hooks/use-toast";
 
@@ -31,16 +30,13 @@ interface EditingSuggestion extends SuggestionWithTerm {
 
 const AdminPanel: React.FC = () => {
   const { t, language } = useLanguage();
-  const [pendingSuggestions, setPendingSuggestions] = useState<
-    SuggestionWithTerm[]
-  >([]);
-  const [pendingEdits, setPendingEdits] = useState<EditSuggestion[]>([]);
+  const [pendingSuggestions, setPendingSuggestions] = useState<SuggestionWithTerm[]>([]);
+  const [pendingTerms, setPendingTerms] = useState<Term[]>([]);
   const [allTerms, setAllTerms] = useState<Term[]>([]);
   const [totalTermsCount, setTotalTermsCount] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(false);
   const [isApprovingAll, setIsApprovingAll] = useState(false);
-  const [editingSuggestion, setEditingSuggestion] =
-    useState<EditingSuggestion | null>(null);
+  const [editingSuggestion, setEditingSuggestion] = useState<EditingSuggestion | null>(null);
   const [editForm, setEditForm] = useState({
     english_term: "",
     suggested_arabic_term: "",
@@ -50,7 +46,7 @@ const AdminPanel: React.FC = () => {
 
   useEffect(() => {
     loadPendingSuggestions();
-    loadPendingEdits();
+    loadPendingTerms();
     loadAllTerms();
   }, []);
 
@@ -70,35 +66,7 @@ const AdminPanel: React.FC = () => {
         .order("created_at", { ascending: false });
 
       if (suggestionError) throw suggestionError;
-
-      // Load pending terms from terms table
-      const { data: pendingTermsData, error: termsError } = await supabase
-        .from("terms")
-        .select("*")
-        .eq("status", "pending")
-        .order("created_at", { ascending: false });
-
-      if (termsError) throw termsError;
-
-      // Convert pending terms to the same format as suggestions
-      const pendingTermsAsSuggestions: SuggestionWithTerm[] = (
-        pendingTermsData || []
-      ).map((term) => ({
-        id: term.id,
-        term_id: term.id,
-        suggested_arabic_term: term.arabic_term || "",
-        status: "pending",
-        created_at: term.created_at,
-        terms: {
-          english_term: term.english_term,
-        },
-      }));
-
-      // Combine both types of pending items
-      setPendingSuggestions([
-        ...(suggestionData || []),
-        ...pendingTermsAsSuggestions,
-      ]);
+      setPendingSuggestions(suggestionData || []);
     } catch (error) {
       console.error("Error loading suggestions:", error);
     } finally {
@@ -106,18 +74,18 @@ const AdminPanel: React.FC = () => {
     }
   };
 
-  const loadPendingEdits = async () => {
+  const loadPendingTerms = async () => {
     try {
       const { data, error } = await supabase
-        .from("edit_suggestions")
+        .from("terms")
         .select("*")
         .eq("status", "pending")
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      setPendingEdits(data || []);
+      setPendingTerms(data || []);
     } catch (error) {
-      console.error("Error loading edit suggestions:", error);
+      console.error("Error loading pending terms:", error);
     }
   };
 
@@ -176,48 +144,24 @@ const AdminPanel: React.FC = () => {
     }
   };
 
-  const handleApproveEdit = async (editSuggestion: EditSuggestion) => {
+  const handleApproveTerm = async (term: Term) => {
     try {
-      const updateData: Partial<Term> = {};
-
-      if (editSuggestion.suggested_english_term) {
-        updateData.english_term = editSuggestion.suggested_english_term;
-      }
-      if (editSuggestion.suggested_arabic_term) {
-        updateData.arabic_term = editSuggestion.suggested_arabic_term;
-      }
-      if (editSuggestion.suggested_description_en !== undefined) {
-        updateData.description_en = editSuggestion.suggested_description_en;
-      }
-      if (editSuggestion.suggested_description_ar !== undefined) {
-        updateData.description_ar = editSuggestion.suggested_description_ar;
-      }
-
-      // Update the term
-      const { error: updateError } = await supabase
+      const { error } = await supabase
         .from("terms")
-        .update(updateData)
-        .eq("id", editSuggestion.term_id);
-
-      if (updateError) throw updateError;
-
-      // Update edit suggestion status
-      const { error: suggestionError } = await supabase
-        .from("edit_suggestions")
         .update({ status: "approved" })
-        .eq("id", editSuggestion.id);
+        .eq("id", term.id);
 
-      if (suggestionError) throw suggestionError;
+      if (error) throw error;
 
       toast({
         title: t("success"),
         description: t("editApproved"),
       });
 
-      loadPendingEdits();
+      loadPendingTerms();
       loadAllTerms();
     } catch (error) {
-      console.error("Error approving edit:", error);
+      console.error("Error approving term:", error);
       toast({
         title: t("error"),
         description: t("editApproveFailed"),
@@ -251,12 +195,12 @@ const AdminPanel: React.FC = () => {
     }
   };
 
-  const handleRejectEdit = async (editId: string) => {
+  const handleRejectTerm = async (termId: string) => {
     try {
       const { error } = await supabase
-        .from("edit_suggestions")
+        .from("terms")
         .update({ status: "rejected" })
-        .eq("id", editId);
+        .eq("id", termId);
 
       if (error) throw error;
 
@@ -265,9 +209,9 @@ const AdminPanel: React.FC = () => {
         description: t("editRejected"),
       });
 
-      loadPendingEdits();
+      loadPendingTerms();
     } catch (error) {
-      console.error("Error rejecting edit:", error);
+      console.error("Error rejecting term:", error);
       toast({
         title: t("error"),
         description: t("editRejectFailed"),
@@ -419,7 +363,7 @@ const AdminPanel: React.FC = () => {
           <TabsTrigger value="suggestions">
             {t("pendingSuggestions")} ({pendingSuggestions.length})
           </TabsTrigger>
-          <TabsTrigger value="edits">{t("pendingEdits")} ({pendingEdits.length})</TabsTrigger>
+          <TabsTrigger value="edits">{t("pendingEdits")} ({pendingTerms.length})</TabsTrigger>
           <TabsTrigger value="terms">
             {t("allTerms")}{totalTermsCount > 0 ? ` (${totalTermsCount})` : ""}
           </TabsTrigger>
@@ -545,20 +489,24 @@ const AdminPanel: React.FC = () => {
         </TabsContent>
 
         <TabsContent value="edits" className="space-y-4">
-          {pendingEdits.length === 0 ? (
+          {pendingTerms.length === 0 ? (
             <Card className="p-8 text-center bg-slate-50">
               <p className="text-slate-600">
                 {t("noPendingEdits")}
               </p>
             </Card>
           ) : (
-            pendingEdits.map((edit) => (
-              <Card key={edit.id} className="border-l-4 border-l-orange-500">
+            pendingTerms.map((term) => (
+              <Card key={term.id} className="border-l-4 border-l-orange-500">
                 <CardHeader className="bg-orange-50">
                   <CardTitle className="flex items-center justify-between">
-                    <span>
-                      {t("suggestedEditForTerm")} {edit.term_id}
-                    </span>
+                    <div className="flex items-center space-x-4">
+                      <span>{term.english_term}</span>
+                      <span className="text-slate-400">→</span>
+                      <span className="text-right font-arabic">
+                        {term.arabic_term}
+                      </span>
+                    </div>
                     <Badge
                       variant="secondary"
                       className={`bg-orange-100 text-orange-800 ${
@@ -572,44 +520,16 @@ const AdminPanel: React.FC = () => {
 
                 <CardContent className="p-6">
                   <div className="space-y-3 mb-4">
-                    {edit.suggested_english_term && (
+                    {term.description_en && (
                       <div>
-                        <strong>
-                          {t("suggestedEnglishTerm")}
-                        </strong>{" "}
-                        {edit.suggested_english_term}
+                        <strong>{t("englishDefinition")}</strong>{" "}
+                        {term.description_en}
                       </div>
                     )}
-                    {edit.suggested_arabic_term && (
+                    {term.description_ar && (
                       <div className={language === "ar" ? "text-right" : ""}>
-                        <strong>
-                          {t("suggestedArabicTranslation")}
-                        </strong>{" "}
-                        {edit.suggested_arabic_term}
-                      </div>
-                    )}
-                    {edit.suggested_description_en && (
-                      <div>
-                        <strong>
-                          {t("suggestedEnglishDefinition")}
-                        </strong>{" "}
-                        {edit.suggested_description_en}
-                      </div>
-                    )}
-                    {edit.suggested_description_ar && (
-                      <div className={language === "ar" ? "text-right" : ""}>
-                        <strong>
-                          {t("suggestedArabicDefinition")}
-                        </strong>{" "}
-                        {edit.suggested_description_ar}
-                      </div>
-                    )}
-                    {edit.change_reason && (
-                      <div>
-                        <strong>
-                          {t("reasonForEdit")}
-                        </strong>{" "}
-                        {edit.change_reason}
+                        <strong>{t("arabicDefinition")}</strong>{" "}
+                        {term.description_ar}
                       </div>
                     )}
                   </div>
@@ -617,7 +537,7 @@ const AdminPanel: React.FC = () => {
                   <div className="flex justify-end">
                     <Button
                       className="mx-2 bg-green-600 hover:bg-green-700"
-                      onClick={() => handleApproveEdit(edit)}
+                      onClick={() => handleApproveTerm(term)}
                     >
                       <span className={language === "ar" ? "font-arabic" : ""}>
                         {t("approve")}
@@ -625,7 +545,7 @@ const AdminPanel: React.FC = () => {
                     </Button>
                     <Button
                       className="mx-2"
-                      onClick={() => handleRejectEdit(edit.id)}
+                      onClick={() => handleRejectTerm(term.id)}
                       variant="destructive"
                     >
                       <span className={language === "ar" ? "font-arabic" : ""}>
@@ -636,7 +556,7 @@ const AdminPanel: React.FC = () => {
 
                   <p className="text-xs text-slate-400 mt-3">
                     {t("submitted")}{" "}
-                    {new Date(edit.created_at).toLocaleDateString(
+                    {new Date(term.created_at).toLocaleDateString(
                       language === "en" ? "en-US" : "ar-SA"
                     )}
                   </p>

@@ -60,39 +60,21 @@ const EditTermForm: React.FC<EditTermFormProps> = ({
 
     setIsSubmitting(true);
     try {
-      const suggestionData: {
-        term_id: string;
-        user_id: string;
-        change_reason: string;
-        status: string;
-        suggested_english_term?: string;
-        suggested_arabic_term?: string;
-        suggested_description_en?: string;
-        suggested_description_ar?: string;
-      } = {
-        term_id: term.id,
-        user_id: user.id,
-        change_reason: formData.change_reason,
+      const termData = {
+        english_term: formData.english_term,
+        arabic_term: formData.arabic_term,
+        description_en: formData.description_en,
+        description_ar: formData.description_ar,
         status: "pending",
+        // Store the change reason in the description_en field if it exists
+        ...(formData.change_reason && {
+          description_en: `${formData.description_en || ""}\n\nReason for edit: ${formData.change_reason}`
+        })
       };
 
-      // Only include changed fields
-      if (formData.english_term !== term.english_term) {
-        suggestionData.suggested_english_term = formData.english_term;
-      }
-      if (formData.arabic_term !== (term.arabic_term || "")) {
-        suggestionData.suggested_arabic_term = formData.arabic_term;
-      }
-      if (formData.description_en !== (term.description_en || "")) {
-        suggestionData.suggested_description_en = formData.description_en;
-      }
-      if (formData.description_ar !== (term.description_ar || "")) {
-        suggestionData.suggested_description_ar = formData.description_ar;
-      }
-
       const { error } = await supabase
-        .from("edit_suggestions")
-        .insert([suggestionData]);
+        .from("terms")
+        .insert([termData]);
 
       if (error) throw error;
 
