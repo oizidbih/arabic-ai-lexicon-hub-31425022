@@ -39,6 +39,7 @@ export const englishTranslations: TranslationKeys = {
   fullName: "Full Name",
   signIn: "Sign In",
   signUp: "Sign Up",
+  signOut: "Sign Out",
   createAccount: "Create Account",
   dontHaveAccount: "Don't have an account? Sign up",
   alreadyHaveAccount: "Already have an account? Sign in",

@@ -38,6 +38,7 @@ export interface TranslationKeys {
 
   // App specific
   appTitle: string;
+  tagline: string;
   searchPlaceholder: string;
   searchInArabic: string;
   searchInEnglish: string;
@@ -55,6 +56,21 @@ export interface TranslationKeys {
   feedback: string;
   status: string;
   actions: string;
+
+  // Auth specific
+  signIn: string;
+  signUp: string;
+  createAccount: string;
+  dontHaveAccount: string;
+  alreadyHaveAccount: string;
+  email: string;
+  password: string;
+  fullName: string;
+  enterFullName: string;
+  enterEmail: string;
+  enterPassword: string;
+  signOut: string;
+  search: string;
 }
 
 export interface Translations {

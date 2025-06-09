@@ -8,6 +8,8 @@ import { useLanguage } from "@/contexts/useLanguage";
 import { toast } from "@/hooks/use-toast";
 import { Navigate } from "react-router-dom";
 import { LogIn, UserPlus, ArrowLeft } from "lucide-react";
+import { englishTranslations } from "@/translations/en";
+import { arabicTranslations } from "@/translations/ar";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -17,6 +19,7 @@ const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { user, signIn, signUp } = useAuth();
   const { language } = useLanguage();
+  const t = language === "en" ? englishTranslations : arabicTranslations;
 
   // Redirect if already authenticated
   if (user) {
@@ -38,26 +41,20 @@ const Auth = () => {
 
       if (result.error) {
         toast({
-          title: language === "en" ? "Error" : "خطأ",
+          title: t.error,
           description: result.error.message,
           variant: "destructive",
         });
       } else if (!isLogin) {
         toast({
-          title: language === "en" ? "Success" : "نجح",
-          description:
-            language === "en"
-              ? "Account created successfully! Please check your email to verify your account."
-              : "تم إنشاء الحساب بنجاح! يرجى التحقق من بريدك الإلكتروني للتحقق من حسابك.",
+          title: t.success,
+          description: t.suggestionSubmitted,
         });
       }
     } catch (error) {
       toast({
-        title: language === "en" ? "Error" : "خطأ",
-        description:
-          language === "en"
-            ? "An unexpected error occurred"
-            : "حدث خطأ غير متوقع",
+        title: t.error,
+        description: t.errorSubmittingEdit,
         variant: "destructive",
       });
     } finally {
@@ -75,16 +72,14 @@ const Auth = () => {
             className="mb-4"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
-            {language === "en" ? "Back" : "رجوع"}
+            {t.cancel}
           </Button>
           <h1
             className={`text-3xl font-bold bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text text-transparent ${
               language === "ar" ? "font-arabic" : ""
             }`}
           >
-            {language === "en"
-              ? "AI Arabic Dictionary"
-              : "قاموس الذكاء الاصطناعي العربي"}
+            {t.appTitle}
           </h1>
         </div>
 
@@ -94,26 +89,14 @@ const Auth = () => {
               <CardTitle
                 className={`text-2xl ${language === "ar" ? "font-arabic" : ""}`}
               >
-                {isLogin
-                  ? language === "en"
-                    ? "Sign In"
-                    : "تسجيل الدخول"
-                  : language === "en"
-                  ? "Create Account"
-                  : "إنشاء حساب"}
+                {isLogin ? t.signIn : t.createAccount}
               </CardTitle>
               <p
                 className={`text-slate-600 ${
                   language === "ar" ? "font-arabic" : ""
                 }`}
               >
-                {isLogin
-                  ? language === "en"
-                    ? "Enter your credentials to access the admin panel"
-                    : "أدخل بياناتك للوصول إلى لوحة الإدارة"
-                  : language === "en"
-                  ? "Create an account to get started"
-                  : "أنشئ حسابًا للبدء"}
+                {isLogin ? t.mustBeLoggedInToEdit : t.dontHaveAccount}
               </p>
             </div>
           </CardHeader>
@@ -122,57 +105,39 @@ const Auth = () => {
             <form onSubmit={handleSubmit} className="space-y-4">
               {!isLogin && (
                 <div className="space-y-2">
-                  <Label htmlFor="fullName">
-                    {language === "en" ? "Full Name" : "الاسم الكامل"}
-                  </Label>
+                  <Label htmlFor="fullName">{t.fullName}</Label>
                   <Input
                     id="fullName"
                     type="text"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    placeholder={
-                      language === "en"
-                        ? "Enter your full name"
-                        : "أدخل اسمك الكامل"
-                    }
+                    placeholder={t.enterFullName}
                     className={language === "ar" ? "text-right" : ""}
                   />
                 </div>
               )}
 
               <div className="space-y-2">
-                <Label htmlFor="email">
-                  {language === "en" ? "Email" : "البريد الإلكتروني"}
-                </Label>
+                <Label htmlFor="email">{t.email}</Label>
                 <Input
                   id="email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder={
-                    language === "en"
-                      ? "Enter your email"
-                      : "أدخل بريدك الإلكتروني"
-                  }
+                  placeholder={t.enterEmail}
                   required
                   className={language === "ar" ? "text-right font-arabic" : ""}
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password">
-                  {language === "en" ? "Password" : "كلمة المرور"}
-                </Label>
+                <Label htmlFor="password">{t.password}</Label>
                 <Input
                   id="password"
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder={
-                    language === "en"
-                      ? "Enter your password"
-                      : "أدخل كلمة المرور"
-                  }
+                  placeholder={t.enterPassword}
                   required
                   className={language === "ar" ? "text-right" : ""}
                 />
@@ -184,11 +149,7 @@ const Auth = () => {
                 disabled={isLoading}
               >
                 {isLoading ? (
-                  language === "en" ? (
-                    "Loading..."
-                  ) : (
-                    "جاري التحميل..."
-                  )
+                  t.loading
                 ) : (
                   <>
                     {isLogin ? (
@@ -196,13 +157,7 @@ const Auth = () => {
                     ) : (
                       <UserPlus className="h-4 w-4 mr-2" />
                     )}
-                    {isLogin
-                      ? language === "en"
-                        ? "Sign In"
-                        : "تسجيل الدخول"
-                      : language === "en"
-                      ? "Create Account"
-                      : "إنشاء حساب"}
+                    {isLogin ? t.signIn : t.createAccount}
                   </>
                 )}
               </Button>
@@ -214,13 +169,7 @@ const Auth = () => {
                 onClick={() => setIsLogin(!isLogin)}
                 className="text-blue-600 hover:text-blue-800"
               >
-                {isLogin
-                  ? language === "en"
-                    ? "Don't have an account? Sign up"
-                    : "لا تملك حسابًا؟ سجل الآن"
-                  : language === "en"
-                  ? "Already have an account? Sign in"
-                  : "لديك حساب بالفعل؟ سجل الدخول"}
+                {isLogin ? t.dontHaveAccount : t.alreadyHaveAccount}
               </Button>
             </div>
           </CardContent>

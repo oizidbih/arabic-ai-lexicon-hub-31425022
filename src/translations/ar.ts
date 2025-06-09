@@ -39,6 +39,7 @@ export const arabicTranslations: TranslationKeys = {
   fullName: "الاسم الكامل",
   signIn: "تسجيل الدخول",
   signUp: "تسجيل",
+  signOut: "تسجيل الخروج",
   createAccount: "إنشاء حساب",
   dontHaveAccount: "لا تملك حسابًا؟ سجل الآن",
   alreadyHaveAccount: "لديك حساب بالفعل؟ سجل الدخول",
