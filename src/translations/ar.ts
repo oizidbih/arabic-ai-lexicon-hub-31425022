@@ -116,6 +116,5 @@ export const arabicTranslations: TranslationKeys = {
   suggestedEnglishDefinition: "التعريف الإنجليزي المقترح:",
   suggestedArabicDefinition: "التعريف العربي المقترح:",
   reasonForEdit: "سبب التعديل:",
-  category: "الفئة",
   adminPanelDescription: "إدارة إدخالات القاموس واقتراحات المستخدمين"
 }
