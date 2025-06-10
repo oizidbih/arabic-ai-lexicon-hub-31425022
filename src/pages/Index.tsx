@@ -44,6 +44,17 @@ const Index = () => {
             AI Arabic Dictionary - Bridging technology terminology across
             languages
           </p>
+          <p className="text-slate-400 mt-2">
+            Powered by{" "}
+            <a
+              href="https://www.el-technology.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-blue-400"
+            >
+              El Technology
+            </a>
+          </p>
         </div>
       </footer>
     </div>
