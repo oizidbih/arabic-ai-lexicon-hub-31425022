@@ -70,7 +70,7 @@ export const arabicTranslations: TranslationKeys = {
   allSuggestionsApproved: "تمت الموافقة على جميع الاقتراحات بنجاح",
   failedToApproveAll: "فشل في الموافقة على جميع الاقتراحات",
   pending: "معلق",
-  approved: "موافق",
+
 
   // Messages
   loading: "جاري التحميل...",
@@ -101,14 +101,9 @@ export const arabicTranslations: TranslationKeys = {
   noPendingEdits: "لا توجد تعديلات معلقة",
   noPendingTerms: "لا توجد مصطلحات معلقة",
   editSuggestion: "تعديل الاقتراح",
-  englishTerm: "المصطلح الإنجليزي",
-  arabicTranslation: "الترجمة العربية",
-  englishDefinition: "التعريف الإنجليزي",
-  arabicDefinition: "التعريف العربي",
   saveEdits: "حفظ التعديلات",
   submitted: "تاريخ الإرسال: ",
   reason: "السبب:",
-  pending: "معلق",
   approved: "مقبول",
   suggestedEditForTerm: "تعديل مقترح للمصطلح: ",
   suggestedEnglishTerm: "المصطلح الإنجليزي المقترح:",
