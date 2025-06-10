@@ -39,7 +39,7 @@ export const englishTranslations: TranslationKeys = {
   submitEdit: "Submit Edit",
 
   // App specific
-  appTitle: "Arabic AI Lexicon Hub",
+  appTitle: "Arabic AI Lexicon",
   tagline: "Empowering Arabic NLP with comprehensive AI terminology",
   searchPlaceholder: "Search for a term...",
   searchInArabic: "Search in Arabic",
