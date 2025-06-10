@@ -1,6 +1,6 @@
 import { useContext, useState, useEffect } from "react";
 import { translations } from "@/translations";
-import { LanguageContext } from "./LanguageContext";
+import { LanguageContext } from "./languageContext";
 import type { Language, Direction, LanguageContextType } from "./types";
 
 export function useLanguageProvider(): LanguageContextType {
