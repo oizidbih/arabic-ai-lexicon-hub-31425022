@@ -15,16 +15,17 @@ const SuggestionForm: React.FC<SuggestionFormProps> = ({ onClose }) => {
   const { t, language } = useLanguage();
   const [formData, setFormData] = useState({
     english_term: "",
-    suggested_arabic: "",
-    definition_english: "",
-    definition_arabic: "",
+    arabic_term: "",
+    description_en: "",
+    description_ar: "",
     category: "",
+    status: "pending",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.english_term || !formData.suggested_arabic) {
+    if (!formData.english_term || !formData.arabic_term) {
       toast({
         title: t("Error"),
         description: t("Please enter both terms"),
@@ -35,22 +36,17 @@ const SuggestionForm: React.FC<SuggestionFormProps> = ({ onClose }) => {
 
     setIsSubmitting(true);
     try {
-      const { error } = await supabase.from("suggestions").insert([
-        {
-          ...formData,
-          status: "pending",
-        },
-      ]);
+      const { error } = await supabase.from("terms").insert([formData]);
 
       if (error) throw error;
 
       toast({
         title: t("Success"),
-        description: t("Suggestion submitted"),
+        description: t("Term submitted for review"),
       });
       onClose();
     } catch (error) {
-      console.error("Error submitting suggestion:", error);
+      console.error("Error submitting term:", error);
       toast({
         title: t("Error"),
         description: t("Failed to submit"),
@@ -65,7 +61,6 @@ const SuggestionForm: React.FC<SuggestionFormProps> = ({ onClose }) => {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <CardHeader className="bg-gradient-to-r from-teal-50 to-blue-50">
-          {" "}
           <CardTitle
             className={`text-xl text-slate-800 ${
               language === "ar" ? "text-right" : ""
@@ -104,9 +99,9 @@ const SuggestionForm: React.FC<SuggestionFormProps> = ({ onClose }) => {
                 {t("arabicTranslation")} *
               </label>
               <Input
-                value={formData.suggested_arabic}
+                value={formData.arabic_term}
                 onChange={(e) =>
-                  setFormData({ ...formData, suggested_arabic: e.target.value })
+                  setFormData({ ...formData, arabic_term: e.target.value })
                 }
                 placeholder="مثال: تعلم الآلة"
                 className="text-right font-arabic"
@@ -143,11 +138,11 @@ const SuggestionForm: React.FC<SuggestionFormProps> = ({ onClose }) => {
                 {t("englishDefinition")}
               </label>
               <Textarea
-                value={formData.definition_english}
+                value={formData.description_en}
                 onChange={(e) =>
                   setFormData({
                     ...formData,
-                    definition_english: e.target.value,
+                    description_en: e.target.value,
                   })
                 }
                 placeholder={t("optionalEnglishDefinition")}
@@ -164,11 +159,11 @@ const SuggestionForm: React.FC<SuggestionFormProps> = ({ onClose }) => {
                 {t("arabicDefinition")}
               </label>
               <Textarea
-                value={formData.definition_arabic}
+                value={formData.description_ar}
                 onChange={(e) =>
                   setFormData({
                     ...formData,
-                    definition_arabic: e.target.value,
+                    description_ar: e.target.value,
                   })
                 }
                 placeholder={t("optionalArabicDefinition")}
